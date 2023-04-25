@@ -2,7 +2,7 @@ package engine;
 
 class Actor {
 	var sprite:Sprite;
-	var position:DeepnightPosition;
+	public var position(default, null):DeepnightPosition;
 	var direction_x:Int;
 	var acceleration_x:Float = 0.15;
 	// var acceleration_y:Float = 0.20;

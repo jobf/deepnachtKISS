@@ -9,22 +9,23 @@ class Game {
 	var buffer:Buffer<Sprite>;
 	var program:Program;
 	var actor:Actor;
+	var camera:Camera;
 
-	public function new(display:Display) {
+	public function new(display:Display, view_width:Int, view_height:Int) {
 
 
 		var tile_map = [
-			"##########################################",
-			"#             #                          #",
-			"#             #       o     #        #####",
-			"#    #              ####   #             #",
-			"#           ##             ###           #",
-			"#                 #               #      #",
-			"#  #           ####               #      #",
-			"#      ###        #               #      #",
-			"#                         #              #",
-			"#                         #         #    #",
-			"##########################################",
+			"##################################################################################",
+			"#                                 #                                              #",
+			"#                 #        ####   #            #        ####      #          #####",
+			"#    #     ###   #                      ####   #             ###   #             #",
+			"#                ###            ##             ###                 ###           #",
+			"#                       #             #               #                   #      #",
+			"#  #    o               #          ####               #                   #      #",
+			"#      ###              #             #               #                   #      #",
+			"#               #                             #                   #              #",
+			"#               #         #                   #         #         #         #    #",
+			"##################################################################################",
 		];
 
 		var tile_size = 16;
@@ -38,10 +39,13 @@ class Game {
 		buffer.addElement(sprite);
 
 		actor = new Actor(sprite, level.player_x, level.player_y, tile_size, level.has_tile_at);
+
+		camera = new Camera(display, view_width, view_height);
 	}
 
 	public function update() {
 		actor.update();
+		camera.center_on_target(actor.position.xx, actor.position.yy);
 	}
 
 	public function on_key_down(key:KeyCode) {

@@ -28,7 +28,7 @@ class Main extends Application {
 		var peoteView = new PeoteView(window);
 		var display = new Display(10, 10, window.width - 20, window.height - 20, Color.GREY1);
 		peoteView.addDisplay(display);
-		game = new Game(display);
+		game = new Game(display, window.width, window.height);
 		is_ready = true;
 	}
 
