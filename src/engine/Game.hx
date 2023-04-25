@@ -41,6 +41,7 @@ class Game {
 		actor = new Actor(sprite, level.player_x, level.player_y, tile_size, level.has_tile_at);
 
 		camera = new Camera(display, view_width, view_height);
+		camera.zoom = 2;
 	}
 
 	public function update() {
@@ -58,6 +59,12 @@ class Game {
 			
 			case W: actor.jump();
 			case UP: actor.jump();
+
+			case NUMBER_1: camera.zoom = 1;
+			case NUMBER_2: camera.zoom = 2;
+			case NUMBER_3: camera.zoom = 4;
+			case NUMBER_4: camera.zoom = 8;
+			case NUMBER_5: camera.zoom = 16;
 
 			case _:
 		}
