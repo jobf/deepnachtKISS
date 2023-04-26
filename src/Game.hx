@@ -51,13 +51,13 @@ class Game {
 		for (position in level.enemy_positions) {
 			var enemy_grid_x = position[0];
 			var enemy_grid_y = position[1];
-			var enemy_sprite = new Sprite(tile_size);
+			var enemy_sprite = new Sprite(enemy_grid_x, enemy_grid_y, tile_size);
 			enemy_sprite.c = 0x77ff92FF;
 			buffer.addElement(enemy_sprite);
 			enemies.push(new Actor(enemy_sprite, enemy_grid_x, enemy_grid_y, tile_size, level.has_tile_at));
 		}
 
-		var hero_sprite = new Sprite(tile_size);
+		var hero_sprite = new Sprite(level.player_x, level.player_y, tile_size);
 		hero_sprite.c = 0xff7788FF;
 		buffer.addElement(hero_sprite);
 		hero = new Actor(hero_sprite, level.player_x, level.player_y, tile_size, level.has_tile_at);

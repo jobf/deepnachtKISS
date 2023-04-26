@@ -5,8 +5,8 @@ import peote.view.Color;
 
 class Sprite implements Element {
 	// position in pixel  (relative to upper left corner of Display)
-	@posX public var x:Int = 0;
-	@posY public var y:Int = 0;
+	@posX public var x:Int;
+	@posY public var y:Int;
 
 	// offset center position
 	@pivotX @formula("w * 0.5 + px_offset") public var px_offset:Float;
@@ -21,7 +21,9 @@ class Sprite implements Element {
 	
 	var OPTIONS = {alpha: true};
 
-	public function new(size:Int) {
+	public function new(x:Int, y:Int, size:Int) {
+		this.x = x;
+		this.y = y;
 		this.w = size;
 		this.h = size;
 	}

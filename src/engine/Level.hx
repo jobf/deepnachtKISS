@@ -26,11 +26,11 @@ class Level {
 		for (y => row in tile_map) {
 			for (x in 0...row.length) {
 				if (is_wall_tile(row, x)) {
-					var sprite = new Sprite(tile_size);
-					sprite.w = tile_size;
-					sprite.h = tile_size;
-					sprite.x = x * tile_size;
-					sprite.y = y * tile_size;
+					var tile_x = x * tile_size;
+					var tile_y = y * tile_size;
+					var sprite = new Sprite(tile_x, tile_y, tile_size);
+					// x and y are offset to the center of the sprite by default
+					// for level tiles adjust this offset to be top left
 					sprite.px_offset = -(tile_size / 2);
 					sprite.py_offset = -(tile_size / 2);
 					buffer.addElement(sprite);

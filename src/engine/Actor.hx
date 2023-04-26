@@ -4,7 +4,7 @@ class Actor {
 	public var sprite(default, null):Sprite;
 	public var position(default, null):DeepnightPosition;
 
-	var direction_x:Int;
+	var direction_x:Int = 0;
 	var acceleration_x:Float = 0.15;
 	var velocity_x_max:Float = 0.62;
 
