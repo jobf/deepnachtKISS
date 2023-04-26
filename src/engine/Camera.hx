@@ -45,8 +45,8 @@ class Camera {
 			}
 		}
 
-		display.xOffset = -((target_x * zoom) - center_x);
-		display.yOffset = -((target_y * zoom) - center_y);
+		display.xOffset = -Std.int((target_x * zoom) - center_x);
+		display.yOffset = -Std.int((target_y * zoom) - center_y);
 	}
 
 	function get_zoom():Float {
