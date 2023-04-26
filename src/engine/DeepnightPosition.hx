@@ -30,12 +30,17 @@ class DeepnightPosition {
 		this.grid_x = grid_x;
 		this.grid_y = grid_y;
 		this.grid_size = grid_size;
-		radius = grid_size / 2;
 		this.has_collision = has_collision;
+		
+		radius = grid_size / 2;
+		
+		// start in center of cell
+		grid_cell_ratio_x = 0.5; 
+		grid_cell_ratio_y = 0.5;
+		
 		x = Std.int((grid_x + grid_cell_ratio_x) * grid_size);
 		y = Std.int((grid_y + grid_cell_ratio_y) * grid_size);
-		grid_cell_ratio_x = 0.5; // start in center of cell
-		grid_cell_ratio_y = 0.5; // start in center of cell
+		
 		delta_x = 0;
 		delta_y = 0;
 	}
