@@ -3,14 +3,14 @@ package engine;
 class Actor {
 	var sprite:Sprite;
 	public var position(default, null):DeepnightPosition;
+
 	var direction_x:Int;
 	var acceleration_x:Float = 0.15;
-	// var acceleration_y:Float = 0.20;
 	var velocity_x_max:Float = 0.62;
+
+	var is_jumping:Bool = false;
 	var jump_velocity:Float = -0.85;
 
-	// var velocity_y_max:Float = -0.82;
-	var is_jumping:Bool = false;
 
 	public function new(sprite:Sprite, grid_x:Int, grid_y:Int, grid_size:Int, has_collision:(grid_x:Int, grid_y:Int) -> Bool) {
 		this.sprite = sprite;
