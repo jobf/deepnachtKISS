@@ -1,6 +1,5 @@
 package;
 
-import engine.Game;
 import haxe.CallStack;
 import lime.app.Application;
 import lime.ui.Window;

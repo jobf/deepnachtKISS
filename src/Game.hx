@@ -1,5 +1,6 @@
-package engine;
+package;
 
+import engine.*;
 import lime.ui.KeyCode;
 import peote.view.Display;
 import peote.view.Program;
