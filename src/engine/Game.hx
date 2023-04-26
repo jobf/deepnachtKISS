@@ -72,12 +72,20 @@ class Game {
 			enemy.sprite.c.a = 0xff;
 
 			// fast distance check - is enemy close enough to care about collision?
-			var can_enemy_collide = Math.abs(hero.position.grid_x - enemy.position.grid_x) <= 2
-				&& Math.abs(hero.position.grid_y - enemy.position.grid_y) <= 2;
+			var is_within_2_tiles_x = Math.abs(hero.position.grid_x - enemy.position.grid_x) <= 2;
+			var is_within_2_tiles_y = Math.abs(hero.position.grid_y - enemy.position.grid_y) <= 2;
+			var can_enemy_collide = is_within_2_tiles_x && is_within_2_tiles_y;
+
 			if (can_enemy_collide) {
 				var overlap = enemy.position.overlaps_by(hero.position);
 				if (overlap > 0) {
 					enemy.sprite.c.a = 0x80;
+					// repel
+					var angle = Math.atan2(enemy.position.y - hero.position.y, enemy.position.x - hero.position.x);
+					var force = 0.1;
+					var repel_power = (hero.position.radius + enemy.position.radius - overlap) / (hero.position.radius + enemy.position.radius);
+					enemy.position.delta_x -= Math.cos(angle) * repel_power * force;
+					enemy.position.delta_y -= Math.sin(angle) * repel_power * force;
 				}
 			}
 
