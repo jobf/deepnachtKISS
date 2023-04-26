@@ -65,33 +65,42 @@ class Game {
 		camera.zoom = camera_zoom;
 	}
 
-	public function update() {
-		hero.update();
-		for (enemy in enemies) {
-			// reset collided state
-			enemy.sprite.c.a = 0xff;
-
-			// fast distance check - is enemy close enough to care about collision?
-			var is_within_2_tiles_x = Math.abs(hero.position.grid_x - enemy.position.grid_x) <= 2;
-			var is_within_2_tiles_y = Math.abs(hero.position.grid_y - enemy.position.grid_y) <= 2;
-			var can_enemy_collide = is_within_2_tiles_x && is_within_2_tiles_y;
-
-			if (can_enemy_collide) {
-				var overlap = enemy.position.overlaps_by(hero.position);
-				if (overlap > 0) {
-					enemy.sprite.c.a = 0x80;
-					// repel
-					var angle = Math.atan2(enemy.position.y - hero.position.y, enemy.position.x - hero.position.x);
-					var force = 0.1;
-					var repel_power = (hero.position.radius + enemy.position.radius - overlap) / (hero.position.radius + enemy.position.radius);
-					enemy.position.delta_x -= Math.cos(angle) * repel_power * force;
-					enemy.position.delta_y -= Math.sin(angle) * repel_power * force;
-				}
+	function collide_with_group(actor:Actor, group:Array<Actor>){
+		for (other in enemies) {
+			if(other == actor){
+				continue;
 			}
 
-			// resolve positions after collisions because after a repel you want to make sure is no level tile collision
+			// fast distance check - is other close enough to care about collision?
+			var is_within_2_tiles_x = Math.abs(actor.position.grid_x - other.position.grid_x) <= 2;
+			var is_within_2_tiles_y = Math.abs(actor.position.grid_y - other.position.grid_y) <= 2;
+			var can_other_collide = is_within_2_tiles_x && is_within_2_tiles_y;
+
+			if (can_other_collide) {
+				var overlap = other.position.overlaps_by(actor.position);
+				if (overlap > 0) {
+					// repel
+					var angle = Math.atan2(other.position.y - actor.position.y, other.position.x - actor.position.x);
+					var force = 0.1;
+					var repel_power = (actor.position.radius + other.position.radius - overlap) / (actor.position.radius + other.position.radius);
+					other.position.delta_x -= Math.cos(angle) * repel_power * force;
+					other.position.delta_y -= Math.sin(angle) * repel_power * force;
+				}
+			}
+		}
+	}
+
+	public function update() {
+		collide_with_group(hero, enemies);
+		// resolve positions after collision to prevent repel from putting actors inside wall tiles
+		hero.update();
+
+		for (enemy in enemies) {
+			collide_with_group(enemy, enemies);
+			// resolve positions after collision to prevent repel from putting actors inside wall tiles
 			enemy.update();
 		}
+
 		var scroll_bounds_x = level.width;
 		var scroll_bounds_y = level.height;
 		camera.center_on_target(hero.position.x, hero.position.y, scroll_bounds_x, scroll_bounds_y);
