@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="deepnightKISS demo" package="deepnightKISS" version="0.1.0" company="ob ltd" />
+	<meta title="deepnachtKISS demo" package="deepnachtKISS" version="0.1.0" company="ob ltd" />
 	
 	<android target-sdk-version="28" />
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->

@@ -1,4 +1,4 @@
-# deepnightKISS
+# deepnachtKISS
 
 KISS approach generic 2D game base on haxe lime with peote-view graphics.
 
