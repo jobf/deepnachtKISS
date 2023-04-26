@@ -1,7 +1,7 @@
 package engine;
 
 class Actor {
-	var sprite:Sprite;
+	public var sprite(default, null):Sprite;
 	public var position(default, null):DeepnightPosition;
 
 	var direction_x:Int;

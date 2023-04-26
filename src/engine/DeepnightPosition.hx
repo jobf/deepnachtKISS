@@ -1,16 +1,19 @@
 package engine;
 
 /**
-	Based on deepnight blog post from 2013 - https://deepnight.net/tutorial/a-simple-platformer-engine-part-1-basics/
+	Based on deepnight blog posts from 2013
+	position logic - https://deepnight.net/tutorial/a-simple-platformer-engine-part-1-basics/
+	overlap logic - https://deepnight.net/tutorial/a-simple-platformer-engine-part-2-collisions/
 **/
 class DeepnightPosition {
 	// aka tile size
 	var grid_size:Int;
+	public var radius:Float;
 
 	// tile map grid x / y
 	public var grid_x:Int;
 	public var grid_y:Int;
-	
+
 	// ratios are 0.0 to 1.0  (position inside cell)
 	public var grid_cell_ratio_x:Float;
 	public var grid_cell_ratio_y:Float;
@@ -23,11 +26,11 @@ class DeepnightPosition {
 	public var delta_x:Float;
 	public var delta_y:Float;
 
-
 	public function new(grid_x:Int, grid_y:Int, grid_size:Int, has_collision:(grid_x:Int, grid_y:Int) -> Bool) {
 		this.grid_x = grid_x;
 		this.grid_y = grid_y;
 		this.grid_size = grid_size;
+		radius = grid_size / 2;
 		this.has_collision = has_collision;
 		x = Std.int((grid_x + grid_cell_ratio_x) * grid_size);
 		y = Std.int((grid_y + grid_cell_ratio_y) * grid_size);
@@ -58,7 +61,7 @@ class DeepnightPosition {
 			grid_cell_ratio_x = 0.7;
 			delta_x = 0; // stop horizontal movement
 		}
-		
+
 		// Right collision
 		if (has_collision(grid_x - 1, grid_y) && grid_cell_ratio_x <= 0.3) {
 			grid_cell_ratio_x = 0.3;
@@ -107,5 +110,12 @@ class DeepnightPosition {
 
 		// resulting position
 		y = Std.int((grid_y + grid_cell_ratio_y) * grid_size);
+	}
+
+	public function overlaps(test:DeepnightPosition):Bool {
+		var max_distance = radius + test.radius;
+		// classic distance formula
+		var distance_squared = (test.x - x) * (test.x - x) + (test.y - y) * (test.y - y);
+		return distance_squared <= max_distance * max_distance;
 	}
 }

@@ -17,7 +17,9 @@ class Sprite implements Element {
 	@sizeY public var h:Int;
 
 	// color (RGBA)
-	@color public var c:Color = 0xffffff90;
+	@color public var c:Color = 0xf0f0f0ff;
+	
+	var OPTIONS = {alpha: true};
 
 	public function new(size:Int) {
 		this.w = size;

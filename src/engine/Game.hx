@@ -66,10 +66,16 @@ class Game {
 	}
 
 	public function update() {
+		hero.update();
 		for (enemy in enemies) {
 			enemy.update();
+			if(enemy.position.overlaps(hero.position)){
+				enemy.sprite.c.a = 0x80;
+			}
+			else{
+				enemy.sprite.c.a = 0xff;
+			}
 		}
-		hero.update();
 		var scroll_bounds_x = level.width;
 		var scroll_bounds_y = level.height;
 		camera.center_on_target(hero.position.x, hero.position.y, scroll_bounds_x, scroll_bounds_y);
