@@ -1,0 +1,24 @@
+name: GithubPages
+
+on: [push, pull_request, repository_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: jobf/peote-libs:latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+            persist-credentials: false
+      - name: Build
+        run: |
+          haxelib setup /haxelib
+          lime build html5
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          publish_dir: ./bin/html5/bin
+          force_orphan: true
+        if: github.ref == 'refs/heads/master'
