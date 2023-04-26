@@ -79,6 +79,6 @@ class Level {
 	}
 
 	function get_height():Int {
-		return tile_map.length * tile_size;
+		return tile_size + tile_map.length * tile_size;
 	}
 }
