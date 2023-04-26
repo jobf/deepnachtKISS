@@ -12,6 +12,7 @@ class Level {
 	public var width(get, never):Int;
 	public var height(get, never):Int;
 	var tile_size:Int;
+	public var enemy_positions(default, null):Array<Array<Int>> = [];
 
 	public function new(display:Display, tile_map:Array<String>, tile_size:Int) {
 		this.tile_map = tile_map;
@@ -33,9 +34,17 @@ class Level {
 					sprite.px_offset = -(tile_size / 2);
 					sprite.py_offset = -(tile_size / 2);
 					buffer.addElement(sprite);
-				} else if (is_player_tile(row, x)) {
-					player_x = x;
-					player_y = y;
+				} else {
+					if (is_player_tile(row, x)) {
+						player_x = x;
+						player_y = y;
+					}
+					if (is_enemy_tile(row, x)) {
+						enemy_positions.push([
+							x,
+							y
+						]);
+					}
 				}
 			}
 		}
@@ -59,6 +68,10 @@ class Level {
 
 	inline function is_player_tile(row:String, x:Int):Bool {
 		return row.charAt(x) == "o";
+	}
+
+	inline function is_enemy_tile(row:String, x:Int):Bool {
+		return row.charAt(x) == "v";
 	}
 
 	function get_width():Int {

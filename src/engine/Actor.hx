@@ -14,7 +14,6 @@ class Actor {
 
 	public function new(sprite:Sprite, grid_x:Int, grid_y:Int, grid_size:Int, has_collision:(grid_x:Int, grid_y:Int) -> Bool) {
 		this.sprite = sprite;
-		sprite.c = 0xff7788FF;
 		position = new DeepnightPosition(grid_x, grid_y, grid_size, has_collision);
 	}
 
