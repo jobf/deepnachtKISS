@@ -2,6 +2,8 @@
 
 KISS approach generic 2D game base on haxe lime with peote-view graphics.
 
+demo - https://jobf.github.io/deepnachtKISS/
+
 ## Dependencies
 
 haxe https://haxe.org/
