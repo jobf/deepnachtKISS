@@ -36,9 +36,13 @@ class Main extends Application {
 	var frame_time_remaining:Float = 0;
 
 	override function update(deltaTime:Int):Void {
+		// update is called at window refresh speed is 60 fps
+		// game is running at 30 fps so don't update the game every frame
 		frame_time_remaining -= deltaTime / 1000; // convert deltaTime from milliseconds to seconds
 		if(frame_time_remaining <= 0){
+			// when enough frame time has elapsed, update the game
 			game.update();
+			// reset the counter
 			frame_time_remaining = frame_duration;
 		}
 	}
