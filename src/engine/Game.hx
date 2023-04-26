@@ -58,7 +58,7 @@ class Game {
 		actor.update();
 		var scroll_bounds_x = level.width;
 		var scroll_bounds_y = level.height;
-		camera.center_on_target(actor.position.xx, actor.position.yy, scroll_bounds_x, scroll_bounds_y);
+		camera.center_on_target(actor.position.x, actor.position.y, scroll_bounds_x, scroll_bounds_y);
 	}
 
 	public function on_key_down(key:KeyCode) {

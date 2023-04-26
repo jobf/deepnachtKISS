@@ -20,20 +20,20 @@ class Actor {
 
 	public function update() {
 		if (direction_x != 0) {
-			position.dx += (direction_x * acceleration_x);
+			position.delta_x += (direction_x * acceleration_x);
 			// cap speed
-			if (position.dx > velocity_x_max) {
-				position.dx = velocity_x_max;
+			if (position.delta_x > velocity_x_max) {
+				position.delta_x = velocity_x_max;
 			}
-			if (position.dx < -velocity_x_max) {
-				position.dx = -velocity_x_max;
+			if (position.delta_x < -velocity_x_max) {
+				position.delta_x = -velocity_x_max;
 			}
 		}
 
 		position.update();
 
-		sprite.x = Std.int(position.xx);
-		sprite.y = Std.int(position.yy);
+		sprite.x = Std.int(position.x);
+		sprite.y = Std.int(position.y);
 	}
 
 	public function change_direction_x(direction:Int) {
@@ -45,9 +45,9 @@ class Actor {
 	}
 
 	public function jump() {
-		if(position.dy == 0) // it's on the ground
+		if(position.delta_y == 0) // it's on the ground
 		{
-			position.dy = jump_velocity;
+			position.delta_y = jump_velocity;
 		}
 	}
 }

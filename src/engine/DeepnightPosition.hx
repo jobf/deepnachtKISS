@@ -1,98 +1,110 @@
 package engine;
 
+/**
+	Based on deepnight blog post from 2013 - https://deepnight.net/tutorial/a-simple-platformer-engine-part-1-basics/
+**/
 class DeepnightPosition {
-	// Base coordinates
-	public var cx:Int;
-	public var cy:Int;
-	public var xr:Float;
-	public var yr:Float;
-
-	// Resulting coordinates
-	public var xx:Float;
-	public var yy:Float;
-
-	// Movements
-	public var dx:Float;
-	public var dy:Float;
-
+	// aka tile size
 	var grid_size:Int;
 
+	// tile map grid x / y
+	public var grid_x:Int;
+	public var grid_y:Int;
+	
+	// ratios are 0.0 to 1.0  (position inside cell)
+	public var grid_cell_ratio_x:Float;
+	public var grid_cell_ratio_y:Float;
+
+	// Resulting coordinates
+	public var x:Float;
+	public var y:Float;
+
+	// Movements
+	public var delta_x:Float;
+	public var delta_y:Float;
+
+
 	public function new(grid_x:Int, grid_y:Int, grid_size:Int, has_collision:(grid_x:Int, grid_y:Int) -> Bool) {
-		cx = grid_x;
-		cy = grid_y;
+		this.grid_x = grid_x;
+		this.grid_y = grid_y;
 		this.grid_size = grid_size;
 		this.has_collision = has_collision;
-		xx = Std.int((cx + xr) * grid_size);
-		yy = Std.int((cy + yr) * grid_size);
-		xr = 0;
-		yr = 0;
-		dx = 0;
-		dy = 0;
+		x = Std.int((grid_x + grid_cell_ratio_x) * grid_size);
+		y = Std.int((grid_y + grid_cell_ratio_y) * grid_size);
+		grid_cell_ratio_x = 0;
+		grid_cell_ratio_y = 0;
+		delta_x = 0;
+		delta_y = 0;
 	}
 
 	var has_collision:(grid_x:Int, grid_y:Int) -> Bool;
 
-	public function setCoordinates(x, y) {
-		xx = x;
-		yy = y;
-		cx = Std.int(xx / grid_size);
-		cy = Std.int(yy / grid_size);
-		xr = (xx - cx * grid_size) / grid_size;
-		yr = (yy - cy * grid_size) / grid_size;
+	public function setCoordinates(x:Float, y:Float) {
+		this.x = x;
+		this.y = y;
+		grid_x = Std.int(x / grid_size);
+		grid_y = Std.int(y / grid_size);
+		grid_cell_ratio_x = (x - grid_x * grid_size) / grid_size;
+		grid_cell_ratio_y = (y - grid_y * grid_size) / grid_size;
 	}
 
 	public function update() {
 		// x movement
-		xr += dx;
-		dx *= 0.84; // friction
+		grid_cell_ratio_x += delta_x;
+		delta_x *= 0.84; // friction
 
-		// left collision
-		if (has_collision(cx + 1, cy) && xr >= 0.7) {
-			xr = 0.7;
-			dx = 0; // stop movement
+		// Left collision
+		if (has_collision(grid_x + 1, grid_y) && grid_cell_ratio_x >= 0.7) {
+			grid_cell_ratio_x = 0.7;
+			delta_x = 0; // stop horizontal movement
 		}
 		
-		// right collision
-		if (has_collision(cx - 1, cy) && xr <= 0.3) {
-			xr = 0.3;
-			dx = 0;
+		// Right collision
+		if (has_collision(grid_x - 1, grid_y) && grid_cell_ratio_x <= 0.3) {
+			grid_cell_ratio_x = 0.3;
+			delta_x = 0;
 		}
 
-		while (xr > 1) {
-			xr--;
-			cx++;
+		// advance grid position if crossing edge
+		while (grid_cell_ratio_x > 1) {
+			grid_cell_ratio_x--;
+			grid_x++;
 		}
-		while (xr < 0) {
-			xr++;
-			cx--;
+		while (grid_cell_ratio_x < 0) {
+			grid_cell_ratio_x++;
+			grid_x--;
 		}
 
-		xx = Std.int((cx + xr) * grid_size);
+		// resulting position
+		x = Std.int((grid_x + grid_cell_ratio_x) * grid_size);
 
 		// y movement
-		yr += dy;
-		dy += 0.05; // gravity
-		dy *= 0.94; // friction
+		grid_cell_ratio_y += delta_y;
+		delta_y += 0.05; // gravity
+		delta_y *= 0.94; // friction
 
 		// Ceiling collision
-		if (yr < 0.2 && has_collision(cx, cy - 1)) {
-			yr = 0.2;
+		if (grid_cell_ratio_y < 0.2 && has_collision(grid_x, grid_y - 1)) {
+			grid_cell_ratio_y = 0.2;
 		}
 
-		if (has_collision(cx, cy + 1) && yr >= 0.5) {
-			dy = 0;
-			yr = 0.5;
+		// Floor collision
+		if (has_collision(grid_x, grid_y + 1) && grid_cell_ratio_y >= 0.5) {
+			delta_y = 0; // stop vertical movement
+			grid_cell_ratio_y = 0.5;
 		}
 
-		while (yr > 1) {
-			cy++;
-			yr--;
+		// advance grid position if crossing edge
+		while (grid_cell_ratio_y > 1) {
+			grid_y++;
+			grid_cell_ratio_y--;
 		}
-		while (yr < 0) {
-			cy--;
-			yr++;
+		while (grid_cell_ratio_y < 0) {
+			grid_y--;
+			grid_cell_ratio_y++;
 		}
 
-		yy = Std.int((cy + yr) * grid_size);
+		// resulting position
+		y = Std.int((grid_y + grid_cell_ratio_y) * grid_size);
 	}
 }
