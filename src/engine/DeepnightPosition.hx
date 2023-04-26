@@ -85,6 +85,7 @@ class DeepnightPosition {
 
 		// Ceiling collision
 		if (grid_cell_ratio_y < 0.2 && has_collision(grid_x, grid_y - 1)) {
+			delta_y = 0; // stop vertical movement
 			grid_cell_ratio_y = 0.2;
 		}
 
