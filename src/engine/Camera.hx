@@ -15,9 +15,36 @@ class Camera {
 		this.view_height = view_height;
 	}
 
-	public function center_on_target(target_x:Float, target_y:Float) {
+	public function center_on_target(target_x:Float, target_y:Float, scroll_boundary_x:Int = 0, scroll_boundary_y:Int = 0) {
 		var center_x = view_width / 2;
 		var center_y = view_height / 2;
+
+		if (scroll_boundary_x > 0) {
+			// keep within boundary left
+			var x_scroll_min = center_x;
+			if (target_x < x_scroll_min) {
+				center_x -= (x_scroll_min - target_x);
+			}
+			// keep within boundary right
+			var x_scroll_max = (scroll_boundary_x - center_x);
+			if (target_x > x_scroll_max) {
+				center_x += (target_x - x_scroll_max);
+			}
+		}
+
+		if (scroll_boundary_y > 0) {
+			// keep within boundary top
+			var y_scroll_min = center_y;
+			if (target_y < y_scroll_min) {
+				center_y -= (y_scroll_min - target_y);
+			}
+			// keep within boundary bottom
+			var y_scroll_max = (scroll_boundary_y - center_y);
+			if (target_y > y_scroll_max) {
+				center_y += (target_y - y_scroll_max);
+			}
+		}
+
 		display.xOffset = -((target_x * zoom) - center_x);
 		display.yOffset = -((target_y * zoom) - center_y);
 	}

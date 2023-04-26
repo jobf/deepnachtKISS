@@ -9,9 +9,13 @@ class Level {
 
 	public var player_x(default, null):Int;
 	public var player_y(default, null):Int;
+	public var width(get, never):Int;
+	public var height(get, never):Int;
+	var tile_size:Int;
 
 	public function new(display:Display, tile_map:Array<String>, tile_size:Int) {
 		this.tile_map = tile_map;
+		this.tile_size = tile_size;
 		var tile_count = tile_map.length * tile_map[0].length;
 
 		var buffer = new Buffer<Sprite>(tile_count, true);
@@ -55,5 +59,13 @@ class Level {
 
 	inline function is_player_tile(row:String, x:Int):Bool {
 		return row.charAt(x) == "o";
+	}
+
+	function get_width():Int {
+		return tile_size + tile_map[0].length * tile_size;
+	}
+
+	function get_height():Int {
+		return tile_map.length * tile_size;
 	}
 }

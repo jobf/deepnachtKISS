@@ -10,6 +10,8 @@ class Game {
 	var program:Program;
 	var actor:Actor;
 	var camera:Camera;
+	var level:Level;
+	var camera_zoom = 3;
 
 	public function new(display:Display, view_width:Int, view_height:Int) {
 
@@ -17,19 +19,27 @@ class Game {
 		var tile_map = [
 			"##################################################################################",
 			"#                                 #                                              #",
-			"#                 #        ####   #            #        ####      #          #####",
-			"#    #     ###   #                      ####   #             ###   #             #",
-			"#                ###            ##             ###                 ###           #",
-			"#                       #             #               #                   #      #",
-			"#  #    o               #          ####               #                   #      #",
 			"#      ###              #             #               #                   #      #",
-			"#               #                             #                   #              #",
-			"#               #         #                   #         #         #         #    #",
+			"#               #                                   ####          #              #",
+			"#    o            #        ####   #            #        ####      ################",
+			"#    #   ####   #                      ####    #             ###   #             #",
+			"#                ###            ##      ##########                 ###           #",
+			"#      ###              #             #               #                   #      #",
+			"#        ########               ###############                   #              #",
+			"#                                     #               #            ########      #",
+			"#####                    ###############              #                   #      #",
+			"#                    ####             #               #                   #      #",
+			"#  #                    #          ####               ##############      ########",
+			"#  #######              #             #               #                   #      #",
+			"#                                             #                         ###      #",
+			"#    #     ###                          ####   #             #######             #",
+			"#                ###            ##             ###                 ###           #",
+			"#                       ###############               #                   #      #",
 			"##################################################################################",
 		];
 
 		var tile_size = 16;
-		var level = new Level(display, tile_map, tile_size);
+		level = new Level(display, tile_map, tile_size);
 
 		buffer = new Buffer<Sprite>(1);
 		program = new Program(buffer);
@@ -41,12 +51,14 @@ class Game {
 		actor = new Actor(sprite, level.player_x, level.player_y, tile_size, level.has_tile_at);
 
 		camera = new Camera(display, view_width, view_height);
-		camera.zoom = 2;
+		camera.zoom = camera_zoom;
 	}
 
 	public function update() {
 		actor.update();
-		camera.center_on_target(actor.position.xx, actor.position.yy);
+		var scroll_bounds_x = level.width;
+		var scroll_bounds_y = level.height;
+		camera.center_on_target(actor.position.xx, actor.position.yy, scroll_bounds_x, scroll_bounds_y);
 	}
 
 	public function on_key_down(key:KeyCode) {
@@ -65,6 +77,7 @@ class Game {
 			case NUMBER_3: camera.zoom = 4;
 			case NUMBER_4: camera.zoom = 8;
 			case NUMBER_5: camera.zoom = 16;
+			case NUMBER_0: camera.zoom = camera_zoom;
 
 			case _:
 		}
