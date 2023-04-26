@@ -15,9 +15,10 @@ class Sprite implements Element {
 	// size in pixel
 	@sizeX public var w:Int;
 	@sizeY public var h:Int;
+	@rotation public var angle:Float = 0.0;
 
 	// color (RGBA)
-	@color public var c:Color = 0xf0f0f0ff;
+	@color public var color:Color = 0xf0f0f0ff;
 	
 	var OPTIONS = {alpha: true};
 

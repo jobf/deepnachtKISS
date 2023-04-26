@@ -52,13 +52,15 @@ class Game {
 			var enemy_grid_x = position[0];
 			var enemy_grid_y = position[1];
 			var enemy_sprite = new Sprite(enemy_grid_x, enemy_grid_y, tile_size);
-			enemy_sprite.c = 0x77ff92FF;
+			enemy_sprite.color = 0x77ff92FF;
+			// rotate to be more distinctive (don't rely on color)
+			enemy_sprite.angle = 45;
 			buffer.addElement(enemy_sprite);
 			enemies.push(new Actor(enemy_sprite, enemy_grid_x, enemy_grid_y, tile_size, level.has_tile_at));
 		}
 
 		var hero_sprite = new Sprite(level.player_x, level.player_y, tile_size);
-		hero_sprite.c = 0xff7788FF;
+		hero_sprite.color = 0xff7788FF;
 		buffer.addElement(hero_sprite);
 		hero = new Actor(hero_sprite, level.player_x, level.player_y, tile_size, level.has_tile_at);
 
@@ -94,7 +96,7 @@ class Game {
 			
 			if (is_checking_line_of_sight) {
 				// reset line of sight state
-				other.sprite.c.a = 0xff;
+				other.sprite.color.a = 0xff;
 
 				// fast distance check - is distance close enough to be seen?
 				final sight_grid_limit = 5;
@@ -103,7 +105,7 @@ class Game {
 				if (do_line_of_sight_check) {
 					var is_actor_in_sight = !Bresenham.is_line_blocked(actor.position.grid_x, actor.position.grid_y, other.position.grid_x, other.position.grid_y, level.has_tile_at);
 					if (is_actor_in_sight) {
-						other.sprite.c.a = 0x70;
+						other.sprite.color.a = 0x70;
 					}
 				}
 			}
