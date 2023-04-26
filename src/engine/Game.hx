@@ -75,7 +75,8 @@ class Game {
 			var can_enemy_collide = Math.abs(hero.position.grid_x - enemy.position.grid_x) <= 2
 				&& Math.abs(hero.position.grid_y - enemy.position.grid_y) <= 2;
 			if (can_enemy_collide) {
-				if (enemy.position.overlaps(hero.position)) {
+				var overlap = enemy.position.overlaps_by(hero.position);
+				if (overlap > 0) {
 					enemy.sprite.c.a = 0x80;
 				}
 			}

@@ -114,8 +114,13 @@ class DeepnightPosition {
 
 	public function overlaps(test:DeepnightPosition):Bool {
 		var max_distance = radius + test.radius;
-		// classic distance formula
 		var distance_squared = (test.x - x) * (test.x - x) + (test.y - y) * (test.y - y);
 		return distance_squared <= max_distance * max_distance;
+	}
+
+	public function overlaps_by(test:DeepnightPosition):Float {
+		var max_distance = radius + test.radius;
+		var distance_squared = (test.x - x) * (test.x - x) + (test.y - y) * (test.y - y);
+		return (max_distance * max_distance) - distance_squared;
 	}
 }
