@@ -68,13 +68,20 @@ class Game {
 	public function update() {
 		hero.update();
 		for (enemy in enemies) {
+			// reset collided state
+			enemy.sprite.c.a = 0xff;
+
+			// fast distance check - is enemy close enough to care about collision?
+			var can_enemy_collide = Math.abs(hero.position.grid_x - enemy.position.grid_x) <= 2
+				&& Math.abs(hero.position.grid_y - enemy.position.grid_y) <= 2;
+			if (can_enemy_collide) {
+				if (enemy.position.overlaps(hero.position)) {
+					enemy.sprite.c.a = 0x80;
+				}
+			}
+
+			// resolve positions after collisions because after a repel you want to make sure is no level tile collision
 			enemy.update();
-			if(enemy.position.overlaps(hero.position)){
-				enemy.sprite.c.a = 0x80;
-			}
-			else{
-				enemy.sprite.c.a = 0xff;
-			}
 		}
 		var scroll_bounds_x = level.width;
 		var scroll_bounds_y = level.height;
