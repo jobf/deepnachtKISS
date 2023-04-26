@@ -65,18 +65,21 @@ class Game {
 		camera.zoom = camera_zoom;
 	}
 
-	function collide_with_group(actor:Actor, group:Array<Actor>){
+	function collide_with_group(actor:Actor, group:Array<Actor>, is_checking_line_of_sight:Bool = false) {
 		for (other in enemies) {
-			if(other == actor){
+			if (other == actor) {
+				// do not check if comparing against same object
 				continue;
 			}
 
-			// fast distance check - is other close enough to care about collision?
-			var is_within_2_tiles_x = Math.abs(actor.position.grid_x - other.position.grid_x) <= 2;
-			var is_within_2_tiles_y = Math.abs(actor.position.grid_y - other.position.grid_y) <= 2;
-			var can_other_collide = is_within_2_tiles_x && is_within_2_tiles_y;
+			var x_grid_distance = Math.abs(actor.position.grid_x - other.position.grid_x);
+			var y_grid_distance = Math.abs(actor.position.grid_y - other.position.grid_y);
 
-			if (can_other_collide) {
+			// fast distance check - is other close enough to collide?
+			final collision_grid_limit = 2;
+			var do_collision_check = x_grid_distance <= collision_grid_limit && y_grid_distance <= collision_grid_limit;
+
+			if (do_collision_check) {
 				var overlap = other.position.overlaps_by(actor.position);
 				if (overlap > 0) {
 					// repel
@@ -87,15 +90,33 @@ class Game {
 					other.position.delta_y -= Math.sin(angle) * repel_power * force;
 				}
 			}
+			
+			if (is_checking_line_of_sight) {
+				// reset line of sight state
+				other.sprite.c.a = 0xff;
+
+				// fast distance check - is distance close enough to be seen?
+				final sight_grid_limit = 5;
+				var do_line_of_sight_check = x_grid_distance <= sight_grid_limit && y_grid_distance <= sight_grid_limit;
+
+				if (do_line_of_sight_check) {
+					var is_actor_in_sight = !Bresenham.is_line_blocked(actor.position.grid_x, actor.position.grid_y, other.position.grid_x, other.position.grid_y, level.has_tile_at);
+					if (is_actor_in_sight) {
+						other.sprite.c.a = 0x70;
+					}
+				}
+			}
 		}
 	}
 
 	public function update() {
-		collide_with_group(hero, enemies);
+		final is_checking_line_of_sight:Bool = true;
+		collide_with_group(hero, enemies, is_checking_line_of_sight);
 		// resolve positions after collision to prevent repel from putting actors inside wall tiles
 		hero.update();
 
 		for (enemy in enemies) {
+
 			collide_with_group(enemy, enemies);
 			// resolve positions after collision to prevent repel from putting actors inside wall tiles
 			enemy.update();
