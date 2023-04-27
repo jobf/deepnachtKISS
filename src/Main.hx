@@ -31,35 +31,50 @@ class Main extends Application {
 		is_ready = true;
 	}
 
-	var frame_duration:Float = 1 / 30; // 30 frames per second
-	var frame_time_remaining:Float = 0;
+	var fixed_frame_rate = 1 / 30;
+	var fixed_time_acumulator:Float = 0.0;
+	#if debug
+	var frames:Array<Int> = [];
+	#end
+	override function update(deltaTime:Int) {
+		if (is_ready) {
+			#if debug
+			frames.push(0);
+			#end
+			// update is called at window frame rate - 60 fps ish
+			// game frame rate is fixed to 30 fps
+			// only update game if fixed_frame_rate has elapsed
+			fixed_time_acumulator += (deltaTime / 1000);
+			while (fixed_time_acumulator > fixed_frame_rate) {
+				fixed_time_acumulator -= fixed_frame_rate;
+				game.update();
+				#if debug
+				frames.push(1);
+				#end
+			}
 
-	override function update(deltaTime:Int):Void {
-		// update is called at window refresh speed is 60 fps
-		// game is running at 30 fps so don't update the game every frame
-		frame_time_remaining -= deltaTime / 1000; // convert deltaTime from milliseconds to seconds
-		if(frame_time_remaining <= 0){
-			// when enough frame time has elapsed, update the game
-			game.update();
-			// reset the counter
-			frame_time_remaining = frame_duration;
+			// draw every frame
+			// todo - interpolation?
+			game.draw();
 		}
 	}
 
 	override function onKeyDown(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void {
 		game.on_key_down(keyCode);
+		#if debug
+		if(keyCode == F){
+			// should trace 	0,0,1,0,0,1 on 60 hz monitor 
+		   // or					0,1,0,1,0,1 on 30 hz monitor 
+			trace(frames); 
+		}
+		#end
 	}
 
 	override function onKeyUp(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void {
 		game.on_key_up(keyCode);
 	}
 
-	override function render(context:lime.graphics.RenderContext):Void {
-		if (is_ready) {
-			game.draw();
-		}
-	}
-
+	// override function render(context:lime.graphics.RenderContext):Void {}
 	// override function onRenderContextLost ():Void trace(" --- WARNING: LOST RENDERCONTEXT --- ");
 	// override function onRenderContextRestored (context:lime.graphics.RenderContext):Void trace(" --- onRenderContextRestored --- ");
 	// ----------------- MOUSE EVENTS ------------------------------

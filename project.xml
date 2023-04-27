@@ -6,7 +6,8 @@
 	<android target-sdk-version="28" />
 	<!-- <meta build-number="714" /> --> <!-- let set the buildnumber manual (android) -->
 	
-	<window width="800" height="600" fps="61" />
+	<window width="800" height="600" fps="60" vsync="true"/>
+	<!-- <window width="800" height="600" fps="61" /> -->
 	<window if="html5" allowHighDPI="false" />
 	
 	<app main="Main" path="bin" file="Main" />
