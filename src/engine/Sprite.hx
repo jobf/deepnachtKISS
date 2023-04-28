@@ -9,12 +9,16 @@ class Sprite implements Element {
 	@posY public var y:Int;
 
 	// offset center position
-	@pivotX @formula("w * 0.5 + px_offset") public var px_offset:Float;
-	@pivotY @formula("h * 0.5 + py_offset") public var py_offset:Float;
+	@pivotX @formula("width * 0.5 + px_offset") public var px_offset:Float = 0.0;
+	@pivotY @formula("height * 0.5 + py_offset") public var py_offset:Float = 0.0;
 
-	// size in pixel
-	@sizeX public var w:Int;
-	@sizeY public var h:Int;
+	// size of graphic element is 1 pixel
+	@sizeX @formula("size_x * width") public var size_x:Int = 1;
+	@sizeY @formula("size_y * height") public var size_y:Int = 1;
+	
+	@custom public var width:Float;
+	@custom public var height:Float;
+
 	@rotation public var angle:Float = 0.0;
 
 	// color (RGBA)
@@ -25,7 +29,7 @@ class Sprite implements Element {
 	public function new(x:Int, y:Int, size:Int) {
 		this.x = x;
 		this.y = y;
-		this.w = size;
-		this.h = size;
+		width = size;
+		height = size;
 	}
 }

@@ -26,6 +26,13 @@ class DeepnightPosition {
 	public var delta_x:Float;
 	public var delta_y:Float;
 
+	// delta_x and delta_y mutiplied by this each frame
+	public var friction_x:Float = 0.90;
+	public var friction_y:Float = 0.94;
+
+	// delta_y is incremented by this each frame
+	public var gravity:Float = 0.05;
+
 	public function new(grid_x:Int, grid_y:Int, grid_size:Int, has_collision:(grid_x:Int, grid_y:Int) -> Bool) {
 		this.grid_x = grid_x;
 		this.grid_y = grid_y;
@@ -59,7 +66,9 @@ class DeepnightPosition {
 	public function update() {
 		// x movement
 		grid_cell_ratio_x += delta_x;
-		delta_x *= 0.84; // friction
+		if(friction_x != 0){
+			delta_x *= friction_x;
+		}
 
 		// Left collision
 		if (has_collision(grid_x + 1, grid_y) && grid_cell_ratio_x >= 0.7) {
@@ -88,8 +97,10 @@ class DeepnightPosition {
 
 		// y movement
 		grid_cell_ratio_y += delta_y;
-		delta_y += 0.05; // gravity
-		delta_y *= 0.94; // friction
+		delta_y += gravity;
+		if(friction_y != 0){
+			delta_y *= friction_y;
+		}
 
 		// Ceiling collision
 		if (grid_cell_ratio_y < 0.2 && has_collision(grid_x, grid_y - 1)) {

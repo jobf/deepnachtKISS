@@ -4,7 +4,8 @@ class Actor {
 	public var sprite(default, null):Sprite;
 	public var position(default, null):DeepnightPosition;
 
-	var direction_x:Int = 0;
+	public var direction_x:Int = 0;
+	public var facing:Int = 0;
 	var acceleration_x:Float = 0.15;
 	var velocity_x_max:Float = 0.62;
 
@@ -36,6 +37,7 @@ class Actor {
 	}
 
 	public function change_direction_x(direction:Int) {
+		facing = direction;
 		direction_x = direction;
 	}
 

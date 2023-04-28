@@ -9,8 +9,11 @@ class Level {
 
 	public var player_x(default, null):Int;
 	public var player_y(default, null):Int;
-	public var width(get, never):Int;
-	public var height(get, never):Int;
+	public var width_tiles(get, never):Int;
+	public var height_tiles(get, never):Int;
+	public var width_pixels(get, never):Int;
+	public var height_pixels(get, never):Int;
+
 	var tile_size:Int;
 	public var enemy_positions(default, null):Array<Array<Int>> = [];
 
@@ -74,11 +77,19 @@ class Level {
 		return row.charAt(x) == "v";
 	}
 
-	function get_width():Int {
+	function get_width_pixels():Int {
 		return tile_size + tile_map[0].length * tile_size;
 	}
 
-	function get_height():Int {
+	function get_height_pixels():Int {
 		return tile_size + tile_map.length * tile_size;
+	}
+
+	function get_width_tiles():Int {
+		return tile_map[0].length;
+	}
+
+	function get_height_tiles():Int {
+		return tile_map.length;
 	}
 }
