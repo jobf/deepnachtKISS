@@ -44,6 +44,8 @@ class Projectile {
 	public function fire(grid_x:Int, grid_y:Int, acceleration_x:Float, acceleration_y:Float) {
 		position.grid_x = grid_x;
 		position.grid_y = grid_y;
+		position.grid_cell_ratio_x = 0.5;
+		position.grid_cell_ratio_y = 0.5;
 		this.acceleration_x = acceleration_x;
 		this.acceleration_y = acceleration_y;
 		is_active = true;

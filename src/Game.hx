@@ -135,15 +135,17 @@ class Game {
 					if (is_actor_in_sight) {
 						other.sprite.color.a = 0x70;
 						if(projectile_count_down <= 0){
-							// if only one enemry should shoot we could reset projectile_count_down here
+							// if only one enemy should shoot we could reset projectile_count_down here
 							// projectile_count_down = projectile_cool_off;
 							var projectile = get_projectile();
 							if(projectile != null){
 								var x = other.position.grid_x;
 								var y = other.position.grid_y;
-								var direction = x_delta > 0 ? 1 : -1;
-								var acceleration_x = 0.05 * direction;
-								var acceleration_y = 0.0;// -0.008;
+								var angle = Math.atan2(actor.position.y - other.position.y, actor.position.x - other.position.x);
+								var delta_x = Math.cos(angle); 
+								var delta_y = Math.sin(angle); 
+								var acceleration_x = delta_x * 0.05;
+								var acceleration_y = delta_y * 0.05;
 								projectile.fire(x, y, acceleration_x, acceleration_y);
 							}
 						}
@@ -158,7 +160,6 @@ class Game {
 			if(projectile.is_active){
 				continue;
 			}
-			trace('get projectile');
 			return projectile;
 		}
 		trace('out of projectiles');
@@ -170,7 +171,6 @@ class Game {
 		
 		for (projectile in projectiles) {
 			if(projectile.is_active){
-				// trace('projectile ' + projectile.position.x + ' ' + projectile.position.y );
 				projectile.update();
 				var greater_than_top_left = projectile.position.grid_x > 0 && projectile.position.grid_y > 0;
 				var less_than_bottom_right = projectile.position.grid_x < level.width_tiles && projectile.position.grid_y < level.height_pixels;
