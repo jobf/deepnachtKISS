@@ -78,11 +78,11 @@ class Level {
 	}
 
 	function get_width_pixels():Int {
-		return tile_size + tile_map[0].length * tile_size;
+		return tile_map[0].length * tile_size;
 	}
 
 	function get_height_pixels():Int {
-		return tile_size + tile_map.length * tile_size;
+		return tile_map.length * tile_size;
 	}
 
 	function get_width_tiles():Int {
