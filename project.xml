@@ -15,8 +15,12 @@
 	
 	<source path="src" />
 	
+	<!-- application layer -->
 	<haxelib name="lime" />	
+	<!-- graphics layer -->
 	<haxelib name="peote-view" />
+	<!-- input management -->
+	<haxelib name="input2action" />
 	
 	<!-- force compiling for a special opengl-es version (only set one of them) -->
 	<!-- this optimizes the build and forces no-runtimecheck for the gl-features -->

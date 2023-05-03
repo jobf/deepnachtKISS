@@ -1,5 +1,7 @@
 package;
 
+import lime.ui.Gamepad;
+import engine.Input;
 import haxe.CallStack;
 import lime.app.Application;
 import lime.ui.Window;
@@ -27,7 +29,8 @@ class Main extends Application {
 		var peoteView = new PeoteView(window);
 		var display = new Display(0, 0, window.width, window.height, Color.GREY1);
 		peoteView.addDisplay(display);
-		game = new Game(display, window.width, window.height);
+		var input = new Input(window);
+		game = new Game(display, input, window.width, window.height);
 		is_ready = true;
 	}
 
@@ -68,10 +71,6 @@ class Main extends Application {
 			trace(frames); 
 		}
 		#end
-	}
-
-	override function onKeyUp(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void {
-		game.on_key_up(keyCode);
 	}
 
 	// override function render(context:lime.graphics.RenderContext):Void {}

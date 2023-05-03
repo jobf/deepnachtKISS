@@ -16,8 +16,12 @@ class Game {
 	var camera_zoom = 3;
 	var projectiles:Array<Projectile>;
 	var projectile_count_down:Int = 0;
-	var projectile_cool_off:Int =  12;
-	public function new(display:Display, view_width:Int, view_height:Int) {
+	var projectile_cool_off:Int = 12;
+	var input:Input;
+
+	public function new(display:Display, input:Input, view_width:Int, view_height:Int) {
+		this.input = input;
+
 		var tile_map = [
 			"##############################################################################",
 			"#                                                                            #",
@@ -92,6 +96,21 @@ class Game {
 
 		camera = new Camera(display, view_width, view_height);
 		camera.zoom = camera_zoom;
+
+		input.registerController({
+			left: {
+				on_press: () -> hero.change_direction_x(-1),
+				on_release: () -> hero.stop_x()
+			},
+			right: {
+				on_press: () -> hero.change_direction_x(1),
+				on_release: () -> hero.stop_x()
+			},
+			a: {
+				on_press: () -> hero.jump(),
+				// on_release: () -> hero.drop()
+			},
+		});
 	}
 
 	function collide_with_group(actor:Actor, group:Array<Actor>, is_checking_line_of_sight:Bool = false) {
@@ -134,16 +153,16 @@ class Game {
 						other.position.grid_y, level.has_tile_at);
 					if (is_actor_in_sight) {
 						other.sprite.color.a = 0x70;
-						if(projectile_count_down <= 0){
+						if (projectile_count_down <= 0) {
 							// if only one enemy should shoot we could reset projectile_count_down here
 							// projectile_count_down = projectile_cool_off;
 							var projectile = get_projectile();
-							if(projectile != null){
+							if (projectile != null) {
 								var x = other.position.grid_x;
 								var y = other.position.grid_y;
 								var angle = Math.atan2(actor.position.y - other.position.y, actor.position.x - other.position.x);
-								var delta_x = Math.cos(angle); 
-								var delta_y = Math.sin(angle); 
+								var delta_x = Math.cos(angle);
+								var delta_y = Math.sin(angle);
 								var acceleration_x = delta_x * 0.05;
 								var acceleration_y = delta_y * 0.05;
 								projectile.fire(x, y, acceleration_x, acceleration_y);
@@ -157,7 +176,7 @@ class Game {
 
 	function get_projectile():Null<Projectile> {
 		for (projectile in projectiles) {
-			if(projectile.is_active){
+			if (projectile.is_active) {
 				continue;
 			}
 			return projectile;
@@ -168,15 +187,16 @@ class Game {
 
 	public function update() {
 		projectile_count_down--;
-		
+
 		for (projectile in projectiles) {
-			if(projectile.is_active){
+			if (projectile.is_active) {
 				projectile.update();
 				var greater_than_top_left = projectile.position.grid_x > 0 && projectile.position.grid_y > 0;
-				var less_than_bottom_right = projectile.position.grid_x < level.width_tiles && projectile.position.grid_y < level.height_pixels;
+				var less_than_bottom_right = projectile.position.grid_x < level.width_tiles
+					&& projectile.position.grid_y < level.height_pixels;
 				var is_out_of_bounds = !greater_than_top_left || !less_than_bottom_right;
 				var is_stopped = projectile.position.delta_x + projectile.position.delta_x == 0;
-				if(is_stopped || is_out_of_bounds){
+				if (is_stopped || is_out_of_bounds) {
 					projectile.is_active = false;
 					projectile.sprite.color.a = 0;
 				}
@@ -195,7 +215,7 @@ class Game {
 		}
 
 		// reset projectile_count_down off after all the updates (this allows all enemies to shoot)
-		if(projectile_count_down < 0){
+		if (projectile_count_down < 0) {
 			projectile_count_down = projectile_cool_off;
 		}
 
@@ -206,31 +226,17 @@ class Game {
 
 	public function on_key_down(key:KeyCode) {
 		switch key {
-			case A:
-				hero.change_direction_x(-1);
-			case LEFT:
-				hero.change_direction_x(-1);
-
-			case D:
-				hero.change_direction_x(1);
-			case RIGHT:
-				hero.change_direction_x(1);
-
-			case W:
-				hero.jump();
-			case UP:
-				hero.jump();
 
 			case NUMBER_1:
 				var projectile = get_projectile();
-				if(projectile != null){
+				if (projectile != null) {
 					var x = hero.position.grid_x;
 					var y = hero.position.grid_y;
-					var acceleration_x =  0.2 * hero.facing;
+					var acceleration_x = 0.2 * hero.facing;
 					var acceleration_y = 0.0;
 					projectile.fire(x, y, acceleration_x, acceleration_y);
 				}
-				// camera.zoom = 1;
+			// camera.zoom = 1;
 			case NUMBER_2:
 				camera.zoom = 2;
 			case NUMBER_3:
@@ -241,22 +247,6 @@ class Game {
 				camera.zoom = 16;
 			case NUMBER_0:
 				camera.zoom = camera_zoom;
-
-			case _:
-		}
-	}
-
-	public function on_key_up(key:KeyCode) {
-		switch key {
-			case A:
-				hero.stop_x();
-			case LEFT:
-				hero.stop_x();
-
-			case D:
-				hero.stop_x();
-			case RIGHT:
-				hero.stop_x();
 
 			case _:
 		}
