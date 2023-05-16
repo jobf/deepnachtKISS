@@ -41,10 +41,45 @@ class Game {
 			"#                                                      ########              #",
 			"#                v           #                     #               #         #",
 			"#               #######  #                                    #    #         #",
-			"#     #####                                             #          #####     #",
-			"#                         ###           v        ###                         #",
+			"#                                                       #          ###       #",
+			"##                        ###           v        ###                        ##",
+			"#          ########################################################          #",
+			"#          #                                                      #          #",
+			"##        ##                                                      ##        ##",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"##        ##                                                      ##        ##",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"##        ##                                                      ##        ##",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"##        ##                                                      ##        ##",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"##        ##                                                      ##        ##",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"##        ##                                                      ##        ##",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"#          #                                                      #          #",
+			"#          #          v           v             v          v      #          #",
+			"##        ##########################################################        ##",
+			"#                                                                            #",
 			"##############################################################################",
 		];
+
 
 		var tile_size = 16;
 		level = new Level(display, tile_map, tile_size);
@@ -74,6 +109,8 @@ class Game {
 		hero_sprite.color = 0xff7788FF;
 		buffer.addElement(hero_sprite);
 		hero = new Actor(hero_sprite, level.player_x, level.player_y, tile_size, level.has_tile_at);
+		hero.movement.velocity.friction_x = 0.25;
+		hero.velocity_x_max = 0.70;
 
 		projectiles = [
 			for (n in 0...projectile_count) {
@@ -85,12 +122,12 @@ class Game {
 				sprite.color = 0xffd677FF;
 				buffer.addElement(sprite);
 
-				var position = new DeepnightPosition(x, y, tile_size, level.has_tile_at);
-				position.gravity = 0;
-				position.friction_x = 0;
-				position.friction_y = 0;
+				var movement = new DeepnightMovement(x, y, tile_size, level.has_tile_at);
+				movement.gravity = 0;
+				movement.velocity.friction_x = 0;
+				movement.velocity.friction_y = 0;
 
-				new Projectile(sprite, position);
+				new Projectile(sprite, movement);
 			}
 		];
 
@@ -99,16 +136,16 @@ class Game {
 
 		input.registerController({
 			left: {
-				on_press: () -> hero.change_direction_x(-1),
+				on_press: () -> hero.change_velocity_x(-1),
 				on_release: () -> hero.stop_x()
 			},
 			right: {
-				on_press: () -> hero.change_direction_x(1),
+				on_press: () -> hero.change_velocity_x(1),
 				on_release: () -> hero.stop_x()
 			},
 			a: {
 				on_press: () -> hero.jump(),
-				// on_release: () -> hero.drop()
+				on_release: () -> hero.drop()
 			},
 		});
 	}
@@ -119,9 +156,9 @@ class Game {
 				// do not check if comparing against same object
 				continue;
 			}
-			var x_delta = actor.position.grid_x - other.position.grid_x;
+			var x_delta = actor.movement.position.grid_x - other.movement.position.grid_x;
 			var x_grid_distance = Math.abs(x_delta);
-			var y_delta = actor.position.grid_y - other.position.grid_y;
+			var y_delta = actor.movement.position.grid_y - other.movement.position.grid_y;
 			var y_grid_distance = Math.abs(y_delta);
 
 			// fast distance check - is other close enough to collide?
@@ -129,14 +166,15 @@ class Game {
 			var do_collision_check = x_grid_distance <= collision_grid_limit && y_grid_distance <= collision_grid_limit;
 
 			if (do_collision_check) {
-				var overlap = other.position.overlaps_by(actor.position);
+				var overlap = other.movement.overlaps_by(actor.movement);
 				if (overlap > 0) {
 					// repel
-					var angle = Math.atan2(other.position.y - actor.position.y, other.position.x - actor.position.x);
+					var angle = Math.atan2(other.movement.position.y - actor.movement.position.y, other.movement.position.x - actor.movement.position.x);
 					var force = 0.1;
-					var repel_power = (actor.position.radius + other.position.radius - overlap) / (actor.position.radius + other.position.radius);
-					other.position.delta_x -= Math.cos(angle) * repel_power * force;
-					other.position.delta_y -= Math.sin(angle) * repel_power * force;
+					var repel_power = (actor.movement.size.radius + other.movement.size.radius - overlap) / (actor.movement.size.radius
+						+ other.movement.size.radius);
+					other.movement.velocity.delta_x -= Math.cos(angle) * repel_power * force;
+					other.movement.velocity.delta_y -= Math.sin(angle) * repel_power * force;
 				}
 			}
 
@@ -149,8 +187,8 @@ class Game {
 				var do_line_of_sight_check = x_grid_distance <= sight_grid_limit && y_grid_distance <= sight_grid_limit;
 
 				if (do_line_of_sight_check) {
-					var is_actor_in_sight = !Bresenham.is_line_blocked(actor.position.grid_x, actor.position.grid_y, other.position.grid_x,
-						other.position.grid_y, level.has_tile_at);
+					var is_actor_in_sight = !Bresenham.is_line_blocked(actor.movement.position.grid_x, actor.movement.position.grid_y,
+						other.movement.position.grid_x, other.movement.position.grid_y, level.has_tile_at);
 					if (is_actor_in_sight) {
 						other.sprite.color.a = 0x70;
 						if (projectile_count_down <= 0) {
@@ -158,9 +196,10 @@ class Game {
 							// projectile_count_down = projectile_cool_off;
 							var projectile = get_projectile();
 							if (projectile != null) {
-								var x = other.position.grid_x;
-								var y = other.position.grid_y;
-								var angle = Math.atan2(actor.position.y - other.position.y, actor.position.x - other.position.x);
+								var x = other.movement.position.grid_x;
+								var y = other.movement.position.grid_y;
+								var angle = Math.atan2(actor.movement.position.y - other.movement.position.y,
+									actor.movement.position.x - other.movement.position.x);
 								var delta_x = Math.cos(angle);
 								var delta_y = Math.sin(angle);
 								var acceleration_x = delta_x * 0.05;
@@ -191,11 +230,11 @@ class Game {
 		for (projectile in projectiles) {
 			if (projectile.is_active) {
 				projectile.update();
-				var greater_than_top_left = projectile.position.grid_x > 0 && projectile.position.grid_y > 0;
-				var less_than_bottom_right = projectile.position.grid_x < level.width_tiles
-					&& projectile.position.grid_y < level.height_pixels;
+				var greater_than_top_left = projectile.movement.position.grid_x > 0 && projectile.movement.position.grid_y > 0;
+				var less_than_bottom_right = projectile.movement.position.grid_x < level.width_tiles
+					&& projectile.movement.position.grid_y < level.height_pixels;
 				var is_out_of_bounds = !greater_than_top_left || !less_than_bottom_right;
-				var is_stopped = projectile.position.delta_x + projectile.position.delta_x == 0;
+				var is_stopped = projectile.movement.velocity.delta_x + projectile.movement.velocity.delta_x == 0;
 				if (is_stopped || is_out_of_bounds) {
 					projectile.is_active = false;
 					projectile.sprite.color.a = 0;
@@ -221,17 +260,16 @@ class Game {
 
 		var scroll_bounds_x = level.width_pixels;
 		var scroll_bounds_y = level.height_pixels;
-		camera.center_on_target(hero.position.x, hero.position.y, scroll_bounds_x, scroll_bounds_y);
+		camera.center_on_target(hero.movement.position.x, hero.movement.position.y, scroll_bounds_x, scroll_bounds_y);
 	}
 
 	public function on_key_down(key:KeyCode) {
 		switch key {
-
 			case NUMBER_1:
 				var projectile = get_projectile();
 				if (projectile != null) {
-					var x = hero.position.grid_x;
-					var y = hero.position.grid_y;
+					var x = hero.movement.position.grid_x;
+					var y = hero.movement.position.grid_y;
 					var acceleration_x = 0.2 * hero.facing;
 					var acceleration_y = 0.0;
 					projectile.fire(x, y, acceleration_x, acceleration_y);

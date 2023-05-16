@@ -15,6 +15,7 @@ class Level {
 	public var height_pixels(get, never):Int;
 
 	var tile_size:Int;
+
 	public var enemy_positions(default, null):Array<Array<Int>> = [];
 
 	public function new(display:Display, tile_map:Array<String>, tile_size:Int) {
@@ -43,17 +44,22 @@ class Level {
 						player_y = y;
 					}
 					if (is_enemy_tile(row, x)) {
-						enemy_positions.push([
-							x,
-							y
-						]);
+						enemy_positions.push([x, y]);
 					}
 				}
 			}
 		}
 	}
 
+	inline function is_out_of_bounds(grid_x:Int, grid_y:Int):Bool {
+		return grid_x < 0 || grid_y < 0 || width_tiles <= grid_x || height_tiles <= grid_y;
+	}
+
 	public function has_tile_at(grid_x:Int, grid_y:Int):Bool {
+		if (is_out_of_bounds(grid_x, grid_y)) {
+			return true;
+		}
+
 		if (grid_y > tile_map.length || grid_y < 0) {
 			return false;
 		}

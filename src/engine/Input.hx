@@ -60,7 +60,7 @@ class Input {
 			},
 			{
 				gamepad: GamepadButton.A,
-				keyboard: KeyCode.P,
+				keyboard: [KeyCode.LEFT_CTRL, KeyCode.RIGHT_CTRL],
 				action: "a"
 			},
 			{

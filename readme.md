@@ -30,11 +30,12 @@ lime test hl
 
 Simple game base with the bare essentials needed to quickly start prototyping 2D games.
 
-It's a slightly altered implementation of "A simple generic 2D engine" as written about here - https://deepnight.net/tutorials/
+Core movement and collision logic is a lightly extended implementation of "A simple generic 2D engine" as written about here - https://deepnight.net/tutorials/
 
 ### Features
 
  - Grid based collisions - for level platforms/walls
  - Radius based collisions - for entity interactions
  - Bresenham line of sight - for casting rays through the level
+ - Platformer movement - extension of base movement with extra jump logic
  - No assets, only colored tiles - concentrate on the game

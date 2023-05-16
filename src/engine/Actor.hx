@@ -2,53 +2,68 @@ package engine;
 
 class Actor {
 	public var sprite(default, null):Sprite;
-	public var position(default, null):DeepnightPosition;
+	public var movement(default, null):PlatformerMovement;
 
-	public var direction_x:Int = 0;
+	public var velocity_x:Int = 0;
 	public var facing:Int = 0;
+
 	var acceleration_x:Float = 0.15;
-	var velocity_x_max:Float = 0.62;
+	public var velocity_x_max:Float = 0.62;
+	public var velocity_y_max:Float = 0.7;
 
 	var is_jumping:Bool = false;
 	var jump_velocity:Float = -0.85;
 
-
-	public function new(sprite:Sprite, grid_x:Int, grid_y:Int, grid_size:Int, has_collision:(grid_x:Int, grid_y:Int) -> Bool) {
+	public function new(sprite:Sprite, grid_x:Int, grid_y:Int, tile_size:Int, has_wall_tile_at:(grid_x:Int, grid_y:Int) -> Bool) {
 		this.sprite = sprite;
-		position = new DeepnightPosition(grid_x, grid_y, grid_size, has_collision);
+		movement = new PlatformerMovement(grid_x, grid_y, tile_size, has_wall_tile_at);
+		movement.velocity.friction_y = 0;
 	}
 
 	public function update() {
-		if (direction_x != 0) {
-			position.delta_x += (direction_x * acceleration_x);
-			// cap speed
-			if (position.delta_x > velocity_x_max) {
-				position.delta_x = velocity_x_max;
-			}
-			if (position.delta_x < -velocity_x_max) {
-				position.delta_x = -velocity_x_max;
-			}
+		if (velocity_x != 0) {
+			// accelerate horizontally
+			movement.velocity.delta_x += (velocity_x * acceleration_x);
 		}
 
-		position.update();
+		// cap speed
+		if (movement.velocity.delta_x > velocity_x_max) {
+			movement.velocity.delta_x = velocity_x_max;
+		}
+		if (movement.velocity.delta_x < -velocity_x_max) {
+			movement.velocity.delta_x = -velocity_x_max;
+		}
 
-		sprite.x = Std.int(position.x);
-		sprite.y = Std.int(position.y);
+		if (movement.velocity.delta_y > velocity_y_max) {
+			movement.velocity.delta_y = velocity_y_max;
+		}
+		if (movement.velocity.delta_y < -velocity_y_max) {
+			movement.velocity.delta_y = -velocity_y_max;
+		}
+
+
+		movement.update();
+
+		sprite.x = Std.int(movement.position.x);
+		sprite.y = Std.int(movement.position.y);
 	}
 
-	public function change_direction_x(direction:Int) {
-		facing = direction;
-		direction_x = direction;
+	public function change_velocity_x(velocity:Int) {
+		facing = velocity;
+		velocity_x = velocity;
 	}
 
 	public function stop_x() {
-		direction_x = 0;
+		velocity_x = 0;
 	}
 
 	public function jump() {
-		if(position.delta_y == 0) // it's on the ground
-		{
-			position.delta_y = jump_velocity;
-		}
+		movement.press_jump();
+	}
+
+	public function drop(){
+		movement.release_jump();
 	}
 }
+
+
