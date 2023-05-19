@@ -32,6 +32,8 @@
 	<haxedef name="peoteview_instancedrawing" />
 	<haxedef name="peoteview_vertexarrayobjects" />
 
+	<haxedef name="no_deprecation_warnings"/>
+
 	<!--<haxedef name="peoteview_debug_macro" />-->
 	<!--<haxedef name="peoteview_debug_buffer" />-->
 	<!--<haxedef name="peoteview_debug_view" />-->
