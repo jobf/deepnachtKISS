@@ -1,5 +1,6 @@
 package;
 
+import engine.Camera;
 import engine.*;
 import lime.ui.KeyCode;
 import peote.view.Display;
@@ -7,26 +8,32 @@ import peote.view.Program;
 import peote.view.Buffer;
 
 class Game {
-	var buffer:Buffer<Sprite>;
-	var program:Program;
+	var tile_size:Int;
+	var level:Level;
+
 	var hero:Actor;
 	var enemies:Array<Actor>;
-	var camera:Camera;
-	var level:Level;
-	var camera_zoom = 3;
+
 	var projectiles:Array<Projectile>;
 	var projectile_count_down:Int = 0;
 	var projectile_cool_off:Int = 12;
+
+	var buffer:Buffer<Sprite>;
+	var program:Program;
+
+	var camera:Camera;
+	var camera_zoom = 3;
 	var input:Input;
 
 	public function new(display:Display, input:Input, view_width:Int, view_height:Int) {
 		this.input = input;
 
+
 		var tile_map = [
 			"##############################################################################",
 			"#                                                                            #",
 			"#                                                                            #",
-			"#                          o                                                 #",
+			"#                                                                            #",
 			"#                         ###        #  #  #  #   ###                        #",
 			"#                                                                            #",
 			"#               ########                               ########              #",
@@ -42,7 +49,7 @@ class Game {
 			"#                v           #                     #               #         #",
 			"#               #######  #                                    #    #         #",
 			"#                                                       #          ###       #",
-			"##                        ###           v        ###                        ##",
+			"##                        ###  o        v        ###                        ##",
 			"#          ########################################################          #",
 			"#          #                                                      #          #",
 			"##        ##                                                      ##        ##",
@@ -81,7 +88,7 @@ class Game {
 		];
 
 
-		var tile_size = 16;
+		tile_size = 16;
 		level = new Level(display, tile_map, tile_size);
 
 		var player_count = 1;
@@ -131,8 +138,25 @@ class Game {
 			}
 		];
 
-		camera = new Camera(display, view_width, view_height);
+		var view_width_center = view_width / 2;
+		var view_height_center = view_height / 2;
+		var scrolling:ScrollConfig = {
+
+			view_width: view_width,
+			view_height: view_height,
+			
+			boundary_right: level.width_pixels,
+			boundary_floor: level.height_pixels,
+			
+			zone_center_x: Std.int(hero.movement.position.x),
+			zone_center_y: Std.int(hero.movement.position.y),
+			zone_width: 100,
+			zone_height: 120,
+		}
+		camera = new Camera(display, scrolling);
 		camera.zoom = camera_zoom;
+		camera.center_on(hero.movement.position.x, hero.movement.position.y);
+		camera.toggle_debug();
 
 		input.registerController({
 			left: {
@@ -258,9 +282,15 @@ class Game {
 			projectile_count_down = projectile_cool_off;
 		}
 
-		var scroll_bounds_x = level.width_pixels;
-		var scroll_bounds_y = level.height_pixels;
-		camera.center_on_target(hero.movement.position.x, hero.movement.position.y, scroll_bounds_x, scroll_bounds_y);
+		var target_width_offset = (tile_size / 2);
+		var target_height_offset = (tile_size / 2);
+		var target_left = hero.movement.position.x - target_width_offset;
+		var target_right = hero.movement.position.x + target_width_offset;
+		var target_ceiling = hero.movement.position.y - target_height_offset;
+		var target_floor = hero.movement.position.y + target_height_offset;
+
+
+		camera.follow_target(target_left, target_right, target_ceiling, target_floor);
 	}
 
 	public function on_key_down(key:KeyCode) {
@@ -285,7 +315,8 @@ class Game {
 				camera.zoom = 16;
 			case NUMBER_0:
 				camera.zoom = camera_zoom;
-
+			case C:
+				camera.toggle_debug();
 			case _:
 		}
 	}
