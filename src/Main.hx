@@ -32,49 +32,19 @@ class Main extends Application {
 		var input = new Input(window);
 		game = new Game(display, input, window.width, window.height);
 		is_ready = true;
-
 	}
 
-	var fixed_frame_rate = 1 / 30;
-	var fixed_time_acumulator:Float = 0.0;
-	#if debugstep
-	var frames:Array<Int> = [];
-	#end
 	override function update(deltaTime:Int) {
 		if (is_ready) {
-			#if debugstep
-			frames.push(0);
-			#end
-			// update is called at window frame rate - 60 fps ish
-			// game frame rate is fixed to 30 fps
-			// only update game if fixed_frame_rate has elapsed
-			fixed_time_acumulator += (deltaTime / 1000);
-			while (fixed_time_acumulator > fixed_frame_rate) {
-				fixed_time_acumulator -= fixed_frame_rate;
-				game.update();
-				#if debugstep
-				frames.push(1);
-				#end
-			}
 
-			// draw every frame
-			// todo - interpolation?
-			game.draw();
+			game.frame(deltaTime);
 		}
 	}
+
 
 	override function onKeyDown(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void {
 		game.on_key_down(keyCode);
-		#if debugstep
-		if(keyCode == F){
-			// should trace 	0,0,1,0,0,1 on 60 hz monitor 
-		   // or					0,1,0,1,0,1 on 30 hz monitor 
-			trace(frames); 
-		}
-		#end
 	}
-
-		
 
 	// override function render(context:lime.graphics.RenderContext):Void {}
 	// override function onRenderContextLost ():Void trace(" --- WARNING: LOST RENDERCONTEXT --- ");

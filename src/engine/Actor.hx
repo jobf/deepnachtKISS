@@ -4,10 +4,14 @@ class Actor {
 	public var sprite(default, null):Sprite;
 	public var movement(default, null):PlatformerMovement;
 
+	var position_x_previous:Float;
+	var position_y_previous:Float;
+
 	public var velocity_x:Int = 0;
 	public var facing:Int = 0;
 
 	var acceleration_x:Float = 0.15;
+
 	public var velocity_x_max:Float = 0.62;
 	public var velocity_y_max:Float = 0.7;
 
@@ -18,6 +22,8 @@ class Actor {
 		this.sprite = sprite;
 		movement = new PlatformerMovement(grid_x, grid_y, tile_size, has_wall_tile_at);
 		movement.velocity.friction_y = 0;
+		position_x_previous = movement.position.x;
+		position_y_previous = movement.position.y;
 	}
 
 	public function update() {
@@ -34,18 +40,28 @@ class Actor {
 			movement.velocity.delta_x = -velocity_x_max;
 		}
 
-		if (movement.velocity.delta_y > velocity_y_max) {
+		if (velocity_y_max > 0 && movement.velocity.delta_y > velocity_y_max) {
 			movement.velocity.delta_y = velocity_y_max;
 		}
-		if (movement.velocity.delta_y < -velocity_y_max) {
+		if (velocity_y_max < 0 && movement.velocity.delta_y < -velocity_y_max) {
 			movement.velocity.delta_y = -velocity_y_max;
 		}
 
+		position_x_previous = movement.position.x;
+		position_y_previous = movement.position.y;
 
 		movement.update();
 
-		sprite.x = Std.int(movement.position.x);
-		sprite.y = Std.int(movement.position.y);
+		// sprite.x = Std.int(movement.position.x);
+		// sprite.y = Std.int(movement.position.y);
+	}
+
+	public function draw(step_ratio:Float) {
+		sprite.x = Calculate.lerp(position_x_previous, movement.position.x, step_ratio);
+		sprite.y = Calculate.lerp(position_y_previous, movement.position.y, step_ratio);
+
+		// sprite.x = Math.ceil(Calculate.lerp(position_x_previous, movement.position.x, step_ratio));
+		// sprite.y = Math.ceil(Calculate.lerp(position_y_previous, movement.position.y, step_ratio));
 	}
 
 	public function change_velocity_x(velocity:Int) {
@@ -61,9 +77,7 @@ class Actor {
 		movement.press_jump();
 	}
 
-	public function drop(){
+	public function drop() {
 		movement.release_jump();
 	}
 }
-
-

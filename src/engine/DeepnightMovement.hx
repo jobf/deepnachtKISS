@@ -135,7 +135,7 @@ class DeepnightMovement {
 		}
 
 		// resulting position
-		position.x = Std.int((position.grid_x + position.grid_cell_ratio_x) * size.tile_size);
+		position.x = Math.floor((position.grid_x + position.grid_cell_ratio_x) * size.tile_size);
 
 		// advance position.grid position if crossing edge
 		while (position.grid_cell_ratio_y > 1) {
@@ -148,7 +148,7 @@ class DeepnightMovement {
 		}
 
 		// resulting position
-		position.y = Std.int((position.grid_y + position.grid_cell_ratio_y) * size.tile_size);
+		position.y = Math.floor((position.grid_y + position.grid_cell_ratio_y) * size.tile_size);
 	}
 }
 

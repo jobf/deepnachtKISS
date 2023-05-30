@@ -1,5 +1,6 @@
 package;
 
+import engine.Loop;
 import engine.Camera;
 import engine.*;
 import lime.ui.KeyCode;
@@ -24,10 +25,11 @@ class Game {
 	var camera:Camera;
 	var camera_zoom = 3;
 	var input:Input;
+	var loop:Loop;
+	var step_ratio:Float;
 
 	public function new(display:Display, input:Input, view_width:Int, view_height:Int) {
 		this.input = input;
-
 
 		var tile_map = [
 			"##############################################################################",
@@ -87,7 +89,6 @@ class Game {
 			"##############################################################################",
 		];
 
-
 		tile_size = 16;
 		level = new Level(display, tile_map, tile_size);
 
@@ -117,7 +118,8 @@ class Game {
 		buffer.addElement(hero_sprite);
 		hero = new Actor(hero_sprite, level.player_x, level.player_y, tile_size, level.has_tile_at);
 		hero.movement.velocity.friction_x = 0.25;
-		hero.velocity_x_max = 0.70;
+		hero.velocity_y_max = 0.99;
+		hero.velocity_x_max = 0.7;
 
 		projectiles = [
 			for (n in 0...projectile_count) {
@@ -141,13 +143,12 @@ class Game {
 		var view_width_center = view_width / 2;
 		var view_height_center = view_height / 2;
 		var scrolling:ScrollConfig = {
-
 			view_width: view_width,
 			view_height: view_height,
-			
+
 			boundary_right: level.width_pixels,
 			boundary_floor: level.height_pixels,
-			
+
 			zone_center_x: Std.int(hero.movement.position.x),
 			zone_center_y: Std.int(hero.movement.position.y),
 			zone_width: 100,
@@ -172,7 +173,16 @@ class Game {
 				on_release: () -> hero.drop()
 			},
 		});
+
+		var fixed_steps_per_second = 30;
+
+		loop = new Loop({
+			step: () -> fixed_step_update(),
+			end: step_ratio -> draw(step_ratio),
+		}, fixed_steps_per_second);
 	}
+
+
 
 	function collide_with_group(actor:Actor, group:Array<Actor>, is_checking_line_of_sight:Bool = false) {
 		for (other in enemies) {
@@ -248,7 +258,11 @@ class Game {
 		return null;
 	}
 
-	public function update() {
+	public function frame(elapsed_ms:Int) {
+		loop.frame(elapsed_ms);
+	}
+
+	function fixed_step_update() {
 		projectile_count_down--;
 
 		for (projectile in projectiles) {
@@ -289,8 +303,19 @@ class Game {
 		var target_ceiling = hero.movement.position.y - target_height_offset;
 		var target_floor = hero.movement.position.y + target_height_offset;
 
-
 		camera.follow_target(target_left, target_right, target_ceiling, target_floor);
+	}
+
+	function draw(step_ratio:Float) {
+
+		hero.draw(step_ratio);
+		for (other in enemies) {
+			other.draw(step_ratio);
+		}
+
+		buffer.update();
+
+		camera.draw(step_ratio);
 	}
 
 	public function on_key_down(key:KeyCode) {
@@ -319,9 +344,5 @@ class Game {
 				camera.toggle_debug();
 			case _:
 		}
-	}
-
-	public function draw() {
-		buffer.update();
 	}
 }

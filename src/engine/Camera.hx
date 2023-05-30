@@ -65,6 +65,10 @@ class Camera {
 
 	var debug:CameraDebug;
 	var is_debug_visible:Bool = false;
+	var offset_x:Int;
+	var offset_y:Int;
+	var previous_offset_x:Float;
+	var previous_offset_y:Float;
 
 	public function new(display:Display, scrolling:ScrollConfig) {
 		this.display = display;
@@ -85,6 +89,9 @@ class Camera {
 	}
 
 	public function follow_target(target_left:Float, target_right:Float, target_ceiling:Float, target_floor:Float) {
+		previous_offset_x = offset_x;
+		previous_offset_y = offset_y;
+
 		/*
 			update dead zone limits
 		 */
@@ -123,6 +130,11 @@ class Camera {
 		}
 	}
 
+	public function draw(step_ratio:Float) {
+		display.xOffset = Calculate.lerp(previous_offset_x, offset_x, step_ratio);
+		display.yOffset = Calculate.lerp(previous_offset_y, offset_y, step_ratio);
+	}
+
 	/**toggle visibility of dead zone debugger**/
 	public function toggle_debug() {
 		is_debug_visible = !is_debug_visible;
@@ -147,7 +159,8 @@ class Camera {
 		}
 
 		// update display offset to move the viewed area
-		display.xOffset = -Std.int((target - view_center_x) * zoom);
+		offset_x = -Std.int((target - view_center_x) * zoom);
+		// display.xOffset = -Std.int((target - view_center_x) * zoom);
 	}
 
 	/**center the camera y axis on the target, will stay within scroll boundaries**/
@@ -168,7 +181,8 @@ class Camera {
 		}
 
 		// update display offset to move the viewed area
-		display.yOffset = -Std.int((target - view_center_y) * zoom);
+		offset_y = -Std.int((target - view_center_y) * zoom);
+		// display.yOffset = -Std.int((target - view_center_y) * zoom);
 	}
 
 	function get_zoom():Float {

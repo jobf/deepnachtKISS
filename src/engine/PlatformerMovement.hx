@@ -160,7 +160,7 @@ class PlatformerMovement extends DeepnightMovement {
 @:structInit
 class JumpConfig {
 	/** maximum height of jump, measured in tiles **/
-	public var height_tiles_max:Float = 6;
+	public var height_tiles_max:Float = 7;
 
 	/** minimum height of jump, measured in tiles **/
 	public var height_tiles_min:Float = 2.5;
