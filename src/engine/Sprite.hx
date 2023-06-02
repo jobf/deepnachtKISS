@@ -15,16 +15,17 @@ class Sprite implements Element {
 	// @pivotY public var py_offset:Float = 0.0;
 
 	// size of graphic element is 1 pixel
-	@sizeX @formula("size_x * width") public var size_x:Int = 1;
-	@sizeY @formula("size_y * height") public var size_y:Int = 1;
+	// @sizeX @formula("size_x * width") public var size_x:Int = 1;
+	// @sizeY @formula("size_y * height") public var size_y:Int = 1;
 	
-	@custom public var width:Float;
-	@custom public var height:Float;
+	@varying @sizeX public var width:Float;
+	@varying @sizeY public var height:Float;
 
 	@rotation public var angle:Float = 0.0;
 
 	// color (RGBA)
 	@color public var color:Color = 0xf0f0f0ff;
+	@texTile() public var tile_index:Int = 0;
 	
 	var OPTIONS = {alpha: true};
 

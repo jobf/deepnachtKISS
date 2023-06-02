@@ -30,7 +30,7 @@ class Game {
 
 	public function new(display:Display, input:Input, view_width:Int, view_height:Int) {
 		this.input = input;
-
+		
 		var tile_map = [
 			"##############################################################################",
 			"#                                                                            #",
@@ -101,6 +101,14 @@ class Game {
 		program.snapToPixel(1);
 		display.addProgram(program);
 
+		var image = lime.utils.Assets.getImage("assets/sprite-shit.png");
+		var texture = new peote.view.Texture(image.width, image.height);
+		texture.setImage(image);
+		texture.tilesX = Std.int(image.width / tile_size);
+		texture.tilesY = Std.int(image.height / tile_size);
+
+		program.addTexture(texture, "sprites");
+
 		enemies = [];
 		for (position in level.enemy_positions) {
 			var enemy_grid_x = position[0];
@@ -109,12 +117,14 @@ class Game {
 			enemy_sprite.color = 0x77ff92FF;
 			// rotate to be more distinctive (don't rely on color)
 			enemy_sprite.angle = 45;
+			enemy_sprite.tile_index = 2;
 			buffer.addElement(enemy_sprite);
 			enemies.push(new Actor(enemy_sprite, enemy_grid_x, enemy_grid_y, tile_size, level.has_tile_at));
 		}
 
 		var hero_sprite = new Sprite(level.player_x, level.player_y, tile_size);
 		hero_sprite.color = 0xff7788FF;
+		hero_sprite.tile_index = 1;
 		buffer.addElement(hero_sprite);
 		hero = new Actor(hero_sprite, level.player_x, level.player_y, tile_size, level.has_tile_at);
 		hero.movement.velocity.friction_x = 0.25;
@@ -176,12 +186,12 @@ class Game {
 
 		var fixed_steps_per_second = 30;
 
+
 		loop = new Loop({
 			step: () -> fixed_step_update(),
 			end: step_ratio -> draw(step_ratio),
 		}, fixed_steps_per_second);
 	}
-
 
 
 	function collide_with_group(actor:Actor, group:Array<Actor>, is_checking_line_of_sight:Bool = false) {
