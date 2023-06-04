@@ -74,6 +74,7 @@ class Camera {
 		this.display = display;
 		this.scroll = scrolling;
 		debug = new CameraDebug(display);
+		toggle_debug();
 	}
 
 	public function center_on(x:Float, y:Float) {

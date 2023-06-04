@@ -23,7 +23,7 @@ class Game {
 	var program:Program;
 
 	var camera:Camera;
-	var camera_zoom = 3;
+	var camera_zoom = 2;
 	var input:Input;
 	var loop:Loop;
 	var step_ratio:Float;
