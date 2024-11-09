@@ -87,8 +87,8 @@ class DeepnightMovement {
 	}
 
 	inline function update_neighbours() {
-		is_wall_left = has_wall_tile_at(position.grid_x + 1, position.grid_y);
-		is_wall_right = has_wall_tile_at(position.grid_x - 1, position.grid_y);
+		is_wall_left = has_wall_tile_at(position.grid_x - 1, position.grid_y);
+		is_wall_right = has_wall_tile_at(position.grid_x + 1, position.grid_y);
 		is_wall_up = has_wall_tile_at(position.grid_x, position.grid_y - 1);
 		is_wall_down = has_wall_tile_at(position.grid_x, position.grid_y + 1);
 	}
@@ -99,14 +99,14 @@ class DeepnightMovement {
 
 	inline function update_collision() {
 		// Left collision
-		if (position.grid_cell_ratio_x >= 0.7 && is_wall_left) {
-			position.grid_cell_ratio_x = 0.7; // clamp position
+		if (position.grid_cell_ratio_x <= 0.3 && is_wall_left) {
+			position.grid_cell_ratio_x = 0.3; // clamp position
 			velocity.delta_x = 0; // stop horizontal movement
 		}
-
+		
 		// Right collision
-		if (position.grid_cell_ratio_x <= 0.3 && is_wall_right) {
-			position.grid_cell_ratio_x = 0.3; // clamp position
+		if (position.grid_cell_ratio_x >= 0.7 && is_wall_right) {
+			position.grid_cell_ratio_x = 0.7; // clamp position
 			velocity.delta_x = 0; // stop horizontal movement
 		}
 
