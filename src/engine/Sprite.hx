@@ -26,7 +26,7 @@ class Sprite implements Element {
 	// color (RGBA)
 	@color public var color:Color = 0xf0f0f0ff;
 	
-	var OPTIONS = {alpha: true};
+	var OPTIONS = {blend: true};
 
 	public function new(x:Int, y:Int, size:Int) {
 		this.x = x;
