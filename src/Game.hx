@@ -153,6 +153,7 @@ class Game {
 			zone_center_y: Std.int(hero.movement.position.y),
 			zone_width: 100,
 			zone_height: 120,
+			smoothing: 0.7
 		}
 		camera = new Camera(display, scrolling);
 		camera.zoom = camera_zoom;

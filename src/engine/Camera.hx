@@ -41,6 +41,9 @@ class ScrollConfig {
 
 	/**width of dead zone**/
 	public var zone_height:Int = 0;
+
+	/** how much to relax camera scrolling speed (0.0 - 1.0) **/
+	public var smoothing:Float = 0.0;
 }
 
 /**
@@ -106,19 +109,19 @@ class Camera {
 			update camera if target is outsize dead zone
 		 */
 		if (target_left <= zone_left) {
-			scroll.zone_center_x -= Std.int(zone_left - target_left);
+			scroll.zone_center_x -= Std.int((zone_left - target_left) * (1.0 - scroll.smoothing));
 			center_camera_x(scroll.zone_center_x);
 		}
 		if (target_ceiling <= zone_ceiling) {
-			scroll.zone_center_y -= Std.int(zone_ceiling - target_ceiling);
+			scroll.zone_center_y -= Std.int((zone_ceiling - target_ceiling) * (1.0 - scroll.smoothing));
 			center_camera_y(scroll.zone_center_y);
 		}
 		if (target_right >= zone_right) {
-			scroll.zone_center_x += Std.int(target_right - zone_right);
+			scroll.zone_center_x += Std.int((target_right - zone_right) * (1.0 - scroll.smoothing));
 			center_camera_x(scroll.zone_center_x);
 		}
 		if (target_floor >= zone_floor) {
-			scroll.zone_center_y += Std.int(target_floor - zone_floor);
+			scroll.zone_center_y += Std.int((target_floor - zone_floor) * (1.0 - scroll.smoothing));
 			center_camera_y(scroll.zone_center_y);
 		}
 
