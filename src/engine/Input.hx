@@ -1,12 +1,10 @@
 package engine;
 
 import lime.ui.Gamepad;
-import input2action.Input2Action;
+import input2action.*;
 import lime.ui.KeyCode;
 import lime.ui.GamepadButton;
 import lime.ui.Window;
-import input2action.ActionMap;
-import input2action.ActionConfig;
 
 @:structInit
 class Controller {
@@ -158,19 +156,18 @@ class Input {
 			},
 		];
 
-		var input2Action = new Input2Action(actionConfig, actionMap);
-		input2Action.setKeyboard();
+		var input2Action = new Input2Action();
+		var keyboard_action = new KeyboardAction(actionConfig, actionMap);
+		input2Action.addKeyboard(keyboard_action);
 
-		input2Action.onGamepadConnect = function(gamepad:Gamepad) {
-			trace('player gamepad connected');
-			input2Action.setGamepad(gamepad);
-		}
+		Gamepad.onConnect.add(gamepad ->
+		{
+			var gamepad_action = new GamepadAction(gamepad.id, actionConfig, actionMap);
+			input2Action.addGamepad(gamepad, gamepad_action);
+			gamepad.onDisconnect.add(() -> input2Action.removeGamepad(gamepad));
+		});
 
-		input2Action.onGamepadDisconnect = function(player:Int) {
-			trace('players $player gamepad disconnected');
-		}
-
-		input2Action.enable(window);
+		input2Action.registerKeyboardEvents(window);
 	}
 
 	public function registerController(controller:Controller) {
