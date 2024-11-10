@@ -10,8 +10,8 @@ class Projectile {
 	var acceleration_x:Float = 0.0;
 	var acceleration_y:Float = 0.0;
 
-	public var velocity_x_max:Float = 3.0;
-	public var velocity_y_max:Float = 3.0;
+	public var velocity_x_max:Float = 0.2;
+	public var velocity_y_max:Float = 0.2;
 
 	public function new(sprite:Sprite, movement:DeepnightMovement) {
 		this.sprite = sprite;
@@ -19,9 +19,41 @@ class Projectile {
 		position_x_previous = movement.position.x;
 		position_y_previous = movement.position.y;
 		movement.events.on_collide = (side_x, side_y) -> {
+			
+			if(movement.velocity.delta_x < 0 && side_x < 0){
+				is_active = false;
+				sprite.color.a = 0x00;
+				sprite.x = -999;
+				sprite.y = -999;
+			}
+
+			if(movement.velocity.delta_x > 0 && side_x > 0){
+				is_active = false;
+				sprite.color.a = 0x00;
+				sprite.x = -999;
+				sprite.y = -999;
+			}
+
+			if(movement.velocity.delta_y < 0 && side_y < 0){
+				is_active = false;
+				sprite.color.a = 0x00;
+				sprite.x = -999;
+				sprite.y = -999;
+			}
+
+			if(movement.velocity.delta_y > 0 && side_y > 0){
+				is_active = false;
+				sprite.color.a = 0x00;
+				sprite.x = -999;
+				sprite.y = -999;
+			}
+
+		}
 	}
 
 	public function update() {
+		if(!is_active) return;
+
 		movement.velocity.delta_x += acceleration_x;
 
 		if (movement.velocity.delta_x > velocity_x_max) {
@@ -53,7 +85,7 @@ class Projectile {
 		sprite.y = Calculate.lerp(position_y_previous, movement.position.y, step_ratio);
 	}
 
-	public function fire(grid_x:Int, grid_y:Int, acceleration_x:Float, acceleration_y:Float) {
+	public function launch(grid_x:Int, grid_y:Int, acceleration_x:Float, acceleration_y:Float) {
 		movement.position.grid_x = grid_x;
 		movement.position.grid_y = grid_y;
 		movement.position.grid_cell_ratio_x = 0.5;

@@ -175,15 +175,13 @@ class Game {
 			},
 		});
 
-		var fixed_steps_per_second = 30;
+		var fixed_steps_per_second = 20;
 
 		loop = new Loop({
 			step: () -> fixed_step_update(),
 			end: step_ratio -> draw(step_ratio),
 		}, fixed_steps_per_second);
 	}
-
-
 
 	function collide_with_group(actor:Actor, group:Array<Actor>, is_checking_line_of_sight:Bool = false) {
 		for (other in enemies) {
@@ -237,9 +235,9 @@ class Game {
 									actor.movement.position.x - other.movement.position.x);
 								var delta_x = Math.cos(angle);
 								var delta_y = Math.sin(angle);
-								var acceleration_x = delta_x * 0.05;
-								var acceleration_y = delta_y * 0.05;
-								projectile.fire(x, y, acceleration_x, acceleration_y);
+								var acceleration_x = delta_x * 0.8;
+								var acceleration_y = delta_y * 0.8;
+								projectile.launch(x, y, acceleration_x, acceleration_y);
 							}
 						}
 					}
@@ -334,7 +332,7 @@ class Game {
 					var y = hero.movement.position.grid_y;
 					var acceleration_x = 0.2 * hero.facing;
 					var acceleration_y = 0.0;
-					projectile.fire(x, y, acceleration_x, acceleration_y);
+					projectile.launch(x, y, acceleration_x, acceleration_y);
 				}
 			// camera.zoom = 1;
 			case NUMBER_2:

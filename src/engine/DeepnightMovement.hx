@@ -9,6 +9,7 @@ class DeepnightMovement {
 	public var position(default, null):Position;
 	public var velocity(default, null):Velocity;
 	public var size(default, null):Size;
+	public var events(default, null):Events;
 
 	// velocity.delta_y is incremented by this each frame
 	public var gravity:Float = 0.05;
@@ -38,6 +39,8 @@ class DeepnightMovement {
 		}
 
 		velocity = {}
+
+		events = {}
 
 		this.has_wall_tile_at = has_wall_tile_at;
 	}
@@ -102,24 +105,36 @@ class DeepnightMovement {
 		if (position.grid_cell_ratio_x <= 0.3 && is_wall_left) {
 			position.grid_cell_ratio_x = 0.3; // clamp position
 			velocity.delta_x = 0; // stop horizontal movement
+			if (events.on_collide != null) {
+				events.on_collide(-1, 0);
+			}
 		}
-		
+
 		// Right collision
 		if (position.grid_cell_ratio_x >= 0.7 && is_wall_right) {
 			position.grid_cell_ratio_x = 0.7; // clamp position
 			velocity.delta_x = 0; // stop horizontal movement
+			if (events.on_collide != null) {
+				events.on_collide(1, 0);
+			}
 		}
 
 		// Ceiling collision
 		if (position.grid_cell_ratio_y < 0.2 && is_wall_up) {
 			position.grid_cell_ratio_y = 0.2; // clamp position
 			velocity.delta_y = 0; // stop vertical movement
+			if (events.on_collide != null) {
+				events.on_collide(0, -1);
+			}
 		}
 
 		// Floor collision
 		if (position.grid_cell_ratio_y >= 0.5 && is_wall_down) {
 			position.grid_cell_ratio_y = 0.5; // clamp position
 			velocity.delta_y = 0; // stop vertical movement
+			if (events.on_collide != null) {
+				events.on_collide(0, 1);
+			}
 		}
 	}
 
@@ -182,4 +197,9 @@ class Velocity {
 class Size {
 	public var tile_size:Int;
 	public var radius:Float;
+}
+
+@:structInit
+class Events {
+	public var on_collide:(side_x:Int, side_y:Int) -> Void = null;
 }
