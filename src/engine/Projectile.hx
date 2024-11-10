@@ -3,8 +3,6 @@ package engine;
 class Projectile {
 	public var sprite(default, null):Sprite;
 	public var movement(default, null):DeepnightMovement;
-	var position_x_previous:Float;
-	var position_y_previous:Float;
 	public var is_active:Bool = false;
 
 	var acceleration_x:Float = 0.0;
@@ -16,8 +14,6 @@ class Projectile {
 	public function new(sprite:Sprite, movement:DeepnightMovement) {
 		this.sprite = sprite;
 		this.movement = movement;
-		position_x_previous = movement.position.x;
-		position_y_previous = movement.position.y;
 		movement.events.on_collide = (side_x, side_y) -> {
 			
 			if(movement.velocity.delta_x < 0 && side_x < 0){
@@ -72,8 +68,8 @@ class Projectile {
 			movement.velocity.delta_y = -velocity_y_max;
 		}
 
-		position_x_previous = movement.position.x;
-		position_y_previous = movement.position.y;
+		movement.position.x_previous = movement.position.x;
+		movement.position.y_previous = movement.position.y;
 
 		movement.update();
 
@@ -81,8 +77,8 @@ class Projectile {
 	
 	public function draw(step_ratio:Float)
 	{
-		sprite.x = Calculate.lerp(position_x_previous, movement.position.x, step_ratio);
-		sprite.y = Calculate.lerp(position_y_previous, movement.position.y, step_ratio);
+		sprite.x = Calculate.lerp(movement.position.x_previous, movement.position.x, step_ratio);
+		sprite.y = Calculate.lerp(movement.position.y_previous, movement.position.y, step_ratio);
 	}
 
 	public function launch(grid_x:Int, grid_y:Int, acceleration_x:Float, acceleration_y:Float) {
@@ -95,7 +91,7 @@ class Projectile {
 		is_active = true;
 		sprite.color.a = 0xff;
 		movement.update();
-		position_x_previous = movement.position.x;
-		position_y_previous = movement.position.y;
+		movement.position.x_previous = movement.position.x;
+		movement.position.y_previous = movement.position.y;
 	}
 }

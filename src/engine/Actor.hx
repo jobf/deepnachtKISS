@@ -3,10 +3,6 @@ package engine;
 class Actor {
 	public var sprite(default, null):Sprite;
 	public var movement(default, null):PlatformerMovement;
-
-	var position_x_previous:Float;
-	var position_y_previous:Float;
-
 	public var velocity_x:Int = 0;
 	public var facing:Int = 0;
 
@@ -22,8 +18,6 @@ class Actor {
 		this.sprite = sprite;
 		movement = new PlatformerMovement(grid_x, grid_y, tile_size, has_wall_tile_at);
 		movement.velocity.friction_y = 0;
-		position_x_previous = movement.position.x;
-		position_y_previous = movement.position.y;
 	}
 
 	public function update() {
@@ -47,15 +41,15 @@ class Actor {
 			movement.velocity.delta_y = -velocity_y_max;
 		}
 
-		position_x_previous = movement.position.x;
-		position_y_previous = movement.position.y;
+		movement.position.x_previous = movement.position.x;
+		movement.position.y_previous = movement.position.y;
 
 		movement.update();
 	}
 
 	public function draw(step_ratio:Float) {
-		sprite.x = Calculate.lerp(position_x_previous, movement.position.x, step_ratio);
-		sprite.y = Calculate.lerp(position_y_previous, movement.position.y, step_ratio);
+		sprite.x = Calculate.lerp(movement.position.x_previous, movement.position.x, step_ratio);
+		sprite.y = Calculate.lerp(movement.position.y_previous, movement.position.y, step_ratio);
 	}
 
 	public function change_velocity_x(velocity:Int) {

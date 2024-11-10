@@ -24,13 +24,18 @@ class DeepnightMovement {
 		var grid_cell_ratio_x = 0.5;
 		var grid_cell_ratio_y = 0.5;
 
+		var x =  (grid_x + grid_cell_ratio_x) * tile_size;
+		var y = (grid_y + grid_cell_ratio_y) * tile_size;
+
 		position = {
 			grid_x: grid_x,
 			grid_y: grid_y,
 			grid_cell_ratio_x: grid_cell_ratio_x,
 			grid_cell_ratio_y: grid_cell_ratio_y,
-			x: Std.int((grid_x + grid_cell_ratio_x) * tile_size),
-			y: Std.int((grid_y + grid_cell_ratio_y) * tile_size)
+			x: x,
+			y: y,
+			x_previous: x,
+			y_previous: y
 		}
 
 		size = {
@@ -177,7 +182,11 @@ class Position {
 	public var grid_cell_ratio_x:Float;
 	public var grid_cell_ratio_y:Float;
 
-	// resulting pixel coordinates
+	// previous pixel coordinates
+	public var x_previous:Float;
+	public var y_previous:Float;
+
+	// current pixel coordinates
 	public var x:Float;
 	public var y:Float;
 }
