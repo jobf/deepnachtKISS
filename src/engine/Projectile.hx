@@ -62,6 +62,7 @@ class Projectile {
 		this.acceleration_y = acceleration_y;
 		is_active = true;
 		sprite.color.a = 0xff;
+		movement.update();
 		position_x_previous = movement.position.x;
 		position_y_previous = movement.position.y;
 	}
