@@ -15,7 +15,7 @@ class Game {
 	var hero:Actor;
 	var enemies:Array<Actor>;
 
-	var projectiles:Array<Projectile>;
+	var projectile_cache:ObjectCache<Projectile>;
 	var projectile_count_down:Int = 0;
 	var projectile_cool_off:Int = 12;
 
@@ -121,24 +121,22 @@ class Game {
 		hero.velocity_y_max = 0.99;
 		hero.velocity_x_max = 0.7;
 
-		projectiles = [
-			for (n in 0...projectile_count) {
-				var size = 4;
-				var x = -100;
-				var y = -100;
+		projectile_cache = new ObjectCache(projectile_count, () -> {
+			var size = 4;
+			var x = -100;
+			var y = -100;
 
-				var sprite = new Sprite(x, y, size);
-				sprite.color = 0xffd677FF;
-				buffer.addElement(sprite);
+			var sprite = new Sprite(x, y, size);
+			sprite.color = 0xffd677F0;
+			buffer.addElement(sprite);
 
-				var movement = new DeepnightMovement(x, y, tile_size, level.has_tile_at);
-				movement.gravity = 0;
-				movement.velocity.friction_x = 0;
-				movement.velocity.friction_y = 0;
+			var movement = new DeepnightMovement(x, y, tile_size, level.has_tile_at);
+			movement.gravity = 0;
+			movement.velocity.friction_x = 0;
+			movement.velocity.friction_y = 0;
 
-				new Projectile(sprite, movement);
-			}
-		];
+			new Projectile(sprite, movement);
+		}, projectile -> projectile.on_cache());
 
 		var view_width_center = view_width / 2;
 		var view_height_center = view_height / 2;
@@ -227,7 +225,7 @@ class Game {
 						if (projectile_count_down <= 0) {
 							// if only one enemy should shoot we could reset projectile_count_down here
 							// projectile_count_down = projectile_cool_off;
-							var projectile = get_projectile();
+							var projectile = projectile_cache.get_item();
 							if (projectile != null) {
 								var x = other.movement.position.grid_x;
 								var y = other.movement.position.grid_y;
@@ -246,17 +244,6 @@ class Game {
 		}
 	}
 
-	function get_projectile():Null<Projectile> {
-		for (projectile in projectiles) {
-			if (projectile.is_active) {
-				continue;
-			}
-			return projectile;
-		}
-		trace('out of projectiles');
-		return null;
-	}
-
 	public function frame(elapsed_ms:Int) {
 		loop.frame(elapsed_ms);
 	}
@@ -264,20 +251,20 @@ class Game {
 	function fixed_step_update() {
 		projectile_count_down--;
 
-		for (projectile in projectiles) {
-			if (projectile.is_active) {
-				projectile.update();
-				var greater_than_top_left = projectile.movement.position.grid_x > 0 && projectile.movement.position.grid_y > 0;
-				var less_than_bottom_right = projectile.movement.position.grid_x < level.width_tiles
-					&& projectile.movement.position.grid_y < level.height_pixels;
-				var is_out_of_bounds = !greater_than_top_left || !less_than_bottom_right;
-				var is_stopped = projectile.movement.velocity.delta_x + projectile.movement.velocity.delta_x == 0;
-				if (is_stopped || is_out_of_bounds) {
-					projectile.is_active = false;
-					projectile.sprite.color.a = 0;
-				}
+		projectile_cache.iterate_active(projectile -> {
+			projectile.update();
+
+			if (projectile.is_expired) {
+				return true;
 			}
-		}
+
+			var greater_than_top_left = projectile.movement.position.grid_x >= 0 && projectile.movement.position.grid_y >= 0;
+			var less_than_bottom_right = projectile.movement.position.grid_x < level.width_tiles
+				&& projectile.movement.position.grid_y < level.height_pixels;
+			var is_out_of_bounds = !greater_than_top_left || !less_than_bottom_right;
+			
+			return is_out_of_bounds;
+		});
 
 		final is_checking_line_of_sight:Bool = true;
 		collide_with_group(hero, enemies, is_checking_line_of_sight);
@@ -307,12 +294,8 @@ class Game {
 
 	function draw(step_ratio:Float) {
 		hero.draw(step_ratio);
-		
-		for (projectile in projectiles) {
-			if (projectile.is_active) {
-				projectile.draw(step_ratio);
-			}
-		}
+
+		projectile_cache.iterate_all(projectile -> projectile.draw(step_ratio));
 
 		for (other in enemies) {
 			other.draw(step_ratio);
@@ -326,7 +309,7 @@ class Game {
 	public function on_key_down(key:KeyCode) {
 		switch key {
 			case NUMBER_1:
-				var projectile = get_projectile();
+				var projectile = projectile_cache.get_item();
 				if (projectile != null) {
 					var x = hero.movement.position.grid_x;
 					var y = hero.movement.position.grid_y;

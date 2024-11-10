@@ -28,9 +28,9 @@ class Sprite implements Element {
 	
 	var OPTIONS = {blend: true};
 
-	public function new(x:Int, y:Int, size:Int) {
-		this.x = x;
-		this.y = y;
+	public function new(x:Float, y:Float, size:Int) {
+		this.x = Std.int(x);
+		this.y = Std.int(y);
 		width = size;
 		height = size;
 	}

@@ -50,13 +50,13 @@ class DeepnightMovement {
 		this.has_wall_tile_at = has_wall_tile_at;
 	}
 
-	public function set_coordinates(x:Float, y:Float, pos:Position, size:Size) {
+	public function teleport_to(x:Float, y:Float) {
 		position.x = x;
 		position.y = y;
 		position.grid_x = Std.int(x / size.tile_size);
 		position.grid_y = Std.int(y / size.tile_size);
-		position.grid_cell_ratio_x = (x - position.grid_x * size.tile_size) / size.tile_size;
-		position.grid_cell_ratio_y = (y - position.grid_y * size.tile_size) / size.tile_size;
+		position.grid_cell_ratio_x = 0.5;
+		position.grid_cell_ratio_y = 0.5;
 	}
 
 	public function overlaps(other:DeepnightMovement):Bool {
@@ -107,39 +107,39 @@ class DeepnightMovement {
 
 	inline function update_collision() {
 		// Left collision
-		if (position.grid_cell_ratio_x <= 0.3 && is_wall_left) {
-			position.grid_cell_ratio_x = 0.3; // clamp position
-			velocity.delta_x = 0; // stop horizontal movement
+		if (position.grid_cell_ratio_x < size.edge_left && is_wall_left) {
+			position.grid_cell_ratio_x = size.edge_left; // clamp position
 			if (events.on_collide != null) {
 				events.on_collide(-1, 0);
 			}
+			velocity.delta_x = 0; // stop horizontal movement
 		}
 
 		// Right collision
-		if (position.grid_cell_ratio_x >= 0.7 && is_wall_right) {
-			position.grid_cell_ratio_x = 0.7; // clamp position
-			velocity.delta_x = 0; // stop horizontal movement
+		if (position.grid_cell_ratio_x > size.edge_right && is_wall_right) {
+			position.grid_cell_ratio_x = size.edge_right; // clamp position
 			if (events.on_collide != null) {
 				events.on_collide(1, 0);
 			}
+			velocity.delta_x = 0; // stop horizontal movement
 		}
 
 		// Ceiling collision
-		if (position.grid_cell_ratio_y < 0.2 && is_wall_up) {
-			position.grid_cell_ratio_y = 0.2; // clamp position
-			velocity.delta_y = 0; // stop vertical movement
+		if (position.grid_cell_ratio_y < size.edge_top && is_wall_up) {
+			position.grid_cell_ratio_y = size.edge_top; // clamp position
 			if (events.on_collide != null) {
 				events.on_collide(0, -1);
 			}
+			velocity.delta_y = 0; // stop vertical movement
 		}
 
 		// Floor collision
-		if (position.grid_cell_ratio_y >= 0.5 && is_wall_down) {
-			position.grid_cell_ratio_y = 0.5; // clamp position
-			velocity.delta_y = 0; // stop vertical movement
+		if (position.grid_cell_ratio_y > size.edge_bottom && is_wall_down) {
+			position.grid_cell_ratio_y = size.edge_bottom; // clamp position
 			if (events.on_collide != null) {
 				events.on_collide(0, 1);
 			}
+			velocity.delta_y = 0; // stop vertical movement
 		}
 	}
 
@@ -204,6 +204,10 @@ class Velocity {
 
 @:structInit
 class Size {
+	public var edge_left:Float = 0.3;
+	public var edge_right:Float = 0.7;
+	public var edge_top:Float = 0.2;
+	public var edge_bottom:Float = 0.5;
 	public var tile_size:Int;
 	public var radius:Float;
 }
