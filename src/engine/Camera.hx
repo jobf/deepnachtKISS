@@ -134,6 +134,7 @@ class Camera {
 	}
 
 	public function draw(step_ratio:Float) {
+		debug.draw(step_ratio);
 		display.xOffset = Calculate.lerp(previous_offset_x, offset_x, step_ratio);
 		display.yOffset = Calculate.lerp(previous_offset_y, offset_y, step_ratio);
 	}
@@ -202,6 +203,10 @@ class CameraDebug {
 	var buffer:Buffer<Sprite>;
 	var program:Program;
 	var zone_sprite:Sprite;
+	var position_x:Float;
+	var position_y:Float;
+	var position_x_previous:Float;
+	var position_y_previous:Float;
 
 	var color_visible:Int = 0x00e5ff20;
 	var color_hidden:Int = 0x00000000;
@@ -210,18 +215,31 @@ class CameraDebug {
 		buffer = new Buffer<Sprite>(1);
 		program = new Program(buffer);
 		program.addToDisplay(display);
-
-		zone_sprite = new Sprite(-10, -10, 1);
+		position_x = -10;
+		position_y = -10;
+		position_x_previous = position_x;
+		position_y_previous = position_y;
+		zone_sprite = new Sprite(position_x, position_y, 1);
 		zone_sprite.color = color_visible;
 		buffer.addElement(zone_sprite);
 	}
 
 	inline public function update(scroll:ScrollConfig) {
-		zone_sprite.x = scroll.zone_center_x;
+		position_x_previous = position_x;
+		position_y_previous = position_y;
+		position_x = scroll.zone_center_x;
+		position_y = scroll.zone_center_y;
+
 		zone_sprite.width = scroll.zone_width;
-		zone_sprite.y = scroll.zone_center_y;
 		zone_sprite.height = scroll.zone_height;
-		buffer.updateElement(zone_sprite);
+	}
+
+	public function draw(step_ratio:Float) {
+		if (is_visible) {
+			zone_sprite.x = Calculate.lerp(position_x_previous, position_x, step_ratio);
+			zone_sprite.y = Calculate.lerp(position_y_previous, position_y, step_ratio);
+			buffer.updateElement(zone_sprite);
+		}
 	}
 
 	public var is_visible(get, set):Bool;
