@@ -308,8 +308,14 @@ class Game {
 	}
 
 	function draw(step_ratio:Float) {
-
 		hero.draw(step_ratio);
+		
+		for (projectile in projectiles) {
+			if (projectile.is_active) {
+				projectile.draw(step_ratio);
+			}
+		}
+
 		for (other in enemies) {
 			other.draw(step_ratio);
 		}

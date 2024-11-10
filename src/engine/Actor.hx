@@ -51,17 +51,11 @@ class Actor {
 		position_y_previous = movement.position.y;
 
 		movement.update();
-
-		// sprite.x = Std.int(movement.position.x);
-		// sprite.y = Std.int(movement.position.y);
 	}
 
 	public function draw(step_ratio:Float) {
 		sprite.x = Calculate.lerp(position_x_previous, movement.position.x, step_ratio);
 		sprite.y = Calculate.lerp(position_y_previous, movement.position.y, step_ratio);
-
-		// sprite.x = Math.ceil(Calculate.lerp(position_x_previous, movement.position.x, step_ratio));
-		// sprite.y = Math.ceil(Calculate.lerp(position_y_previous, movement.position.y, step_ratio));
 	}
 
 	public function change_velocity_x(velocity:Int) {
