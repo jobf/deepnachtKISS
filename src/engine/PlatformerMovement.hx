@@ -138,7 +138,7 @@ class PlatformerMovement extends DeepnightMovement {
 		super.update_collision();
 		// if delta_y is 0 and there is a wall tile below then movement stopped
 		// because we collided with the ground
-		is_on_ground = velocity.delta_y == 0 && is_wall_down;
+		is_on_ground = velocity.delta_y == 0 && neighbours.is_wall_down;
 
 		// update position within grid and cell
 		super.update_position();

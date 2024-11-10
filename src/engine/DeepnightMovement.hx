@@ -15,16 +15,13 @@ class DeepnightMovement {
 	public var gravity:Float = 0.05;
 
 	var has_wall_tile_at:(grid_x:Int, grid_y:Int) -> Bool;
-	var is_wall_left:Bool;
-	var is_wall_right:Bool;
-	var is_wall_up:Bool;
-	var is_wall_down:Bool;
+	public var neighbours:Neighbours;
 
 	public function new(grid_x:Int, grid_y:Int, tile_size:Int, has_wall_tile_at:(grid_x:Int, grid_y:Int) -> Bool) {
 		var grid_cell_ratio_x = 0.5;
 		var grid_cell_ratio_y = 0.5;
 
-		var x =  (grid_x + grid_cell_ratio_x) * tile_size;
+		var x = (grid_x + grid_cell_ratio_x) * tile_size;
 		var y = (grid_y + grid_cell_ratio_y) * tile_size;
 
 		position = {
@@ -45,6 +42,8 @@ class DeepnightMovement {
 
 		velocity = {}
 
+		neighbours = {}
+		
 		events = {}
 
 		this.has_wall_tile_at = has_wall_tile_at;
@@ -95,10 +94,10 @@ class DeepnightMovement {
 	}
 
 	inline function update_neighbours() {
-		is_wall_left = has_wall_tile_at(position.grid_x - 1, position.grid_y);
-		is_wall_right = has_wall_tile_at(position.grid_x + 1, position.grid_y);
-		is_wall_up = has_wall_tile_at(position.grid_x, position.grid_y - 1);
-		is_wall_down = has_wall_tile_at(position.grid_x, position.grid_y + 1);
+		neighbours.is_wall_left = has_wall_tile_at(position.grid_x - 1, position.grid_y);
+		neighbours.is_wall_right = has_wall_tile_at(position.grid_x + 1, position.grid_y);
+		neighbours.is_wall_up = has_wall_tile_at(position.grid_x, position.grid_y - 1);
+		neighbours.is_wall_down = has_wall_tile_at(position.grid_x, position.grid_y + 1);
 	}
 
 	inline function update_gravity() {
@@ -107,7 +106,7 @@ class DeepnightMovement {
 
 	inline function update_collision() {
 		// Left collision
-		if (position.grid_cell_ratio_x < size.edge_left && is_wall_left) {
+		if (position.grid_cell_ratio_x < size.edge_left && neighbours.is_wall_left) {
 			position.grid_cell_ratio_x = size.edge_left; // clamp position
 			if (events.on_collide != null) {
 				events.on_collide(-1, 0);
@@ -116,7 +115,7 @@ class DeepnightMovement {
 		}
 
 		// Right collision
-		if (position.grid_cell_ratio_x > size.edge_right && is_wall_right) {
+		if (position.grid_cell_ratio_x > size.edge_right && neighbours.is_wall_right) {
 			position.grid_cell_ratio_x = size.edge_right; // clamp position
 			if (events.on_collide != null) {
 				events.on_collide(1, 0);
@@ -125,7 +124,7 @@ class DeepnightMovement {
 		}
 
 		// Ceiling collision
-		if (position.grid_cell_ratio_y < size.edge_top && is_wall_up) {
+		if (position.grid_cell_ratio_y < size.edge_top && neighbours.is_wall_up) {
 			position.grid_cell_ratio_y = size.edge_top; // clamp position
 			if (events.on_collide != null) {
 				events.on_collide(0, -1);
@@ -134,7 +133,7 @@ class DeepnightMovement {
 		}
 
 		// Floor collision
-		if (position.grid_cell_ratio_y > size.edge_bottom && is_wall_down) {
+		if (position.grid_cell_ratio_y > size.edge_bottom && neighbours.is_wall_down) {
 			position.grid_cell_ratio_y = size.edge_bottom; // clamp position
 			if (events.on_collide != null) {
 				events.on_collide(0, 1);
@@ -173,46 +172,59 @@ class DeepnightMovement {
 }
 
 @:structInit
+@:publicFields
 class Position {
 	// tile map coordinates
-	public var grid_x:Int;
-	public var grid_y:Int;
+	var grid_x:Int;
+	var grid_y:Int;
 
 	// ratios are 0.0 to 1.0  (position inside grid cell)
-	public var grid_cell_ratio_x:Float;
-	public var grid_cell_ratio_y:Float;
+	var grid_cell_ratio_x:Float;
+	var grid_cell_ratio_y:Float;
 
 	// previous pixel coordinates
-	public var x_previous:Float;
-	public var y_previous:Float;
+	var x_previous:Float;
+	var y_previous:Float;
 
 	// current pixel coordinates
-	public var x:Float;
-	public var y:Float;
+	var x:Float;
+	var y:Float;
 }
 
 @:structInit
+@:publicFields
 class Velocity {
 	// applied to grid cell ratio each frame
-	public var delta_x:Float = 0;
-	public var delta_y:Float = 0;
+	var delta_x:Float = 0;
+	var delta_y:Float = 0;
 
 	// friction applied each frame 0.0 for none, 1.0 for maximum
-	public var friction_x:Float = 0.10;
-	public var friction_y:Float = 0.06;
+	var friction_x:Float = 0.10;
+	var friction_y:Float = 0.06;
 }
 
 @:structInit
+@:publicFields
 class Size {
-	public var edge_left:Float = 0.3;
-	public var edge_right:Float = 0.7;
-	public var edge_top:Float = 0.2;
-	public var edge_bottom:Float = 0.5;
-	public var tile_size:Int;
-	public var radius:Float;
+	var edge_left:Float = 0.3;
+	var edge_right:Float = 0.7;
+	var edge_top:Float = 0.2;
+	var edge_bottom:Float = 0.5;
+	var tile_size:Int;
+	var radius:Float;
 }
 
 @:structInit
+@:publicFields
 class Events {
-	public var on_collide:(side_x:Int, side_y:Int) -> Void = null;
+	var on_collide:(side_x:Int, side_y:Int) -> Void = null;
+}
+
+@:structInit
+@:publicFields
+class Neighbours {
+	var is_wall_left:Bool = false;
+	var is_wall_right:Bool = false;
+	var is_wall_up:Bool = false;
+	var is_wall_down:Bool = false;
 }
