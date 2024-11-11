@@ -1,12 +1,10 @@
 package;
 
-import engine.Loop;
-import engine.Camera;
 import engine.*;
+import engine.PhysicsBase.PhysicsSimple;
+import engine.Camera.ScrollConfig;
 import lime.ui.KeyCode;
-import peote.view.Display;
-import peote.view.Program;
-import peote.view.Buffer;
+import peote.view.*;
 
 class Game {
 	var tile_size:Int;
@@ -130,8 +128,8 @@ class Game {
 			sprite.color = 0xffd677F0;
 			buffer.addElement(sprite);
 
-			var movement = new DeepnightMovement(x, y, tile_size, level.has_tile_at);
-			movement.gravity = 0;
+			var movement = new PhysicsSimple(x, y, tile_size, level.has_tile_at);
+			movement.velocity.gravity = 0;
 			movement.velocity.friction_x = 0;
 			movement.velocity.friction_y = 0;
 

@@ -2,22 +2,40 @@ package engine;
 
 /**
 	Based on deepnight blog posts from 2013
-	movemen logic - https://deepnight.net/tutorial/a-simple-platformer-engine-part-1-basics/
+	movement logic - https://deepnight.net/tutorial/a-simple-platformer-engine-part-1-basics/
 	overlap logic - https://deepnight.net/tutorial/a-simple-platformer-engine-part-2-collisions/
 **/
-class DeepnightMovement {
-	public var position(default, null):Position;
-	public var velocity(default, null):Velocity;
-	public var size(default, null):Size;
-	public var events(default, null):Events;
 
-	// velocity.delta_y is incremented by this each frame
-	public var gravity:Float = 0.05;
+class PhysicsSimple extends PhysicsBase {
+	function update() {
+		// change position within grid cell by velocity
+		update_velocity();
+
+		// check for adjacent tiles
+		update_neighbours();
+
+		// apply gravity 
+		velocity.delta_y += velocity.gravity;
+
+		// stop movement if colliding with a tile
+		update_collision();
+
+		// update position within grid and cell
+		update_position();
+	}
+}
+
+@:publicFields
+abstract class PhysicsBase {
+	var position(default, null):Position;
+	var velocity(default, null):Velocity;
+	var size(default, null):Size;
+	var events(default, null):Events;
 
 	var has_wall_tile_at:(grid_x:Int, grid_y:Int) -> Bool;
-	public var neighbours:Neighbours;
+	var neighbours:Neighbours;
 
-	public function new(grid_x:Int, grid_y:Int, tile_size:Int, has_wall_tile_at:(grid_x:Int, grid_y:Int) -> Bool) {
+	function new(grid_x:Int, grid_y:Int, tile_size:Int, has_wall_tile_at:(grid_x:Int, grid_y:Int) -> Bool) {
 		var grid_cell_ratio_x = 0.5;
 		var grid_cell_ratio_y = 0.5;
 
@@ -43,13 +61,13 @@ class DeepnightMovement {
 		velocity = {}
 
 		neighbours = {}
-		
+
 		events = {}
 
 		this.has_wall_tile_at = has_wall_tile_at;
 	}
 
-	public function teleport_to(x:Float, y:Float) {
+	inline function teleport_to(x:Float, y:Float) {
 		position.x = x;
 		position.y = y;
 		position.grid_x = Std.int(x / size.tile_size);
@@ -58,7 +76,7 @@ class DeepnightMovement {
 		position.grid_cell_ratio_y = 0.5;
 	}
 
-	public function overlaps(other:DeepnightMovement):Bool {
+	inline function overlaps(other:PhysicsBase):Bool {
 		var max_distance = size.radius + other.size.radius;
 		var distance_squared = (other.position.x
 			- position.x) * (other.position.x - position.x)
@@ -66,7 +84,7 @@ class DeepnightMovement {
 		return distance_squared <= max_distance * max_distance;
 	}
 
-	public function overlaps_by(other:DeepnightMovement):Float {
+	inline function overlaps_by(other:PhysicsBase):Float {
 		var max_distance = size.radius + other.size.radius;
 		var distance_squared = (other.position.x
 			- position.x) * (other.position.x - position.x)
@@ -74,21 +92,11 @@ class DeepnightMovement {
 		return (max_distance * max_distance) - distance_squared;
 	}
 
-	public function update() {
-		update_movement_horizontal();
-		update_movement_vertical();
-		update_neighbours();
-		update_gravity();
-		update_collision();
-		update_position();
-	}
+	abstract function update():Void;
 
-	inline function update_movement_horizontal() {
+	inline function update_velocity() {
 		position.grid_cell_ratio_x += velocity.delta_x;
 		velocity.delta_x *= (1.0 - velocity.friction_x);
-	}
-
-	inline function update_movement_vertical() {
 		position.grid_cell_ratio_y += velocity.delta_y;
 		velocity.delta_y *= (1.0 - velocity.friction_y);
 	}
@@ -98,10 +106,6 @@ class DeepnightMovement {
 		neighbours.is_wall_right = has_wall_tile_at(position.grid_x + 1, position.grid_y);
 		neighbours.is_wall_up = has_wall_tile_at(position.grid_x, position.grid_y - 1);
 		neighbours.is_wall_down = has_wall_tile_at(position.grid_x, position.grid_y + 1);
-	}
-
-	inline function update_gravity() {
-		velocity.delta_y += gravity;
 	}
 
 	inline function update_collision() {
@@ -201,6 +205,9 @@ class Velocity {
 	// friction applied each frame 0.0 for none, 1.0 for maximum
 	var friction_x:Float = 0.10;
 	var friction_y:Float = 0.06;
+
+	// applied to delta_y each frame
+	var gravity:Float = 0.05;
 }
 
 @:structInit

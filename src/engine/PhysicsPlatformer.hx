@@ -1,6 +1,6 @@
 package engine;
 
-/*
+/**
 	This extension of the base movement adds extra functionality typically found in platformer physics
 
 	- predictable jump variables : intuitively adjust the height and duration of a jump to derive y velocity
@@ -10,8 +10,8 @@ package engine;
 	- coyote time : allows jump to be performed a short time after leaving the edge of platform
 	- jump buffer : allows jump button press to to be registered before touching ground
 
- */
-class PlatformerMovement extends DeepnightMovement {
+ **/
+class PhysicsPlatformer extends engine.PhysicsBase {
 	public var jump_config(default, null):JumpConfig;
 
 	/** y velocity of jump ascent. measured in tiles per step **/
@@ -26,10 +26,10 @@ class PlatformerMovement extends DeepnightMovement {
 	/** gravity to apply during jump descent, measured in tiles per step **/
 	var gravity_descent:Float;
 
-	/** game steps remaining until jump buffer time ends**/
+	/** game steps remaining until jump buffer time ends **/
 	var buffer_step_count_remaining:Int = 0;
 
-	/** game steps remaining until coyote time ends**/
+	/** game steps remaining until coyote time ends **/
 	var coyote_steps_remaining:Int = 0;
 
 	/** true during the ascent and descent of a jump **/
@@ -90,15 +90,9 @@ class PlatformerMovement extends DeepnightMovement {
 		velocity.delta_y = velocity_descent;
 	}
 
-	override function update() {
-		/* 
-			most of the update logic for the movement is called from the super class
-			however we also perform extra jump logic
-		*/
-
-
-		// jump logic
-		//------------
+	function update() {
+		/// jump logic
+		/////////////
 
 		// count down every step
 		coyote_steps_remaining--;
@@ -119,32 +113,17 @@ class PlatformerMovement extends DeepnightMovement {
 				buffer_step_count_remaining = 0;
 			}
 		}
-		
 
-		// movement logic
-		//----------------
+		/// movement logic
+		/////////////////
 
 		// change position within grid cell by velocity
-		super.update_movement_horizontal();
-		super.update_movement_vertical();
+		update_velocity();
 
 		// check for adjacent tiles
-		super.update_neighbours();
+		update_neighbours();
 
-		// override gravity logic so use different values during jump
-		override_update_gravity();
-
-		// stop movement if colliding with a tile
-		super.update_collision();
-		// if delta_y is 0 and there is a wall tile below then movement stopped
-		// because we collided with the ground
-		is_on_ground = velocity.delta_y == 0 && neighbours.is_wall_down;
-
-		// update position within grid and cell
-		super.update_position();
-	}
-
-	inline function override_update_gravity() {
+		// apply gravity
 		if (is_jump_in_progress) {
 			// gravity has different values depending on jump phase
 			// ascent phase if delta_y is negative (moving towards ceiling)
@@ -152,8 +131,18 @@ class PlatformerMovement extends DeepnightMovement {
 			velocity.delta_y += velocity.delta_y <= 0 ? gravity_ascent : gravity_descent;
 		} else {
 			// use default gravity when jump is not in progress
-			velocity.delta_y += gravity;
+			velocity.delta_y += velocity.gravity;
 		}
+
+		// stop movement if colliding with a tile
+		update_collision();
+
+		// if delta_y is 0 and there is a wall tile below then movement stopped
+		// because we collided with the ground
+		is_on_ground = velocity.delta_y == 0 && neighbours.is_wall_down;
+
+		// update position within grid and cell
+		update_position();
 	}
 }
 

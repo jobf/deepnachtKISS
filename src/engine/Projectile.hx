@@ -1,8 +1,10 @@
 package engine;
 
+import engine.PhysicsBase;
+
 class Projectile {
 	public var sprite(default, null):Sprite;
-	public var movement(default, null):DeepnightMovement;
+	public var movement(default, null):PhysicsSimple;
 
 	var acceleration_x:Float = 0.0;
 	var acceleration_y:Float = 0.0;
@@ -12,7 +14,7 @@ class Projectile {
 
 	public var is_expired:Bool = false;
 
-	public function new(sprite:Sprite, movement:DeepnightMovement) {
+	public function new(sprite:Sprite, movement:PhysicsSimple) {
 		this.sprite = sprite;
 		this.movement = movement;
 		movement.events.on_collide = on_collide;
