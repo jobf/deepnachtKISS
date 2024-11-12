@@ -1,7 +1,7 @@
 package engine;
 
 class Actor {
-	public var sprite(default, null):Sprite;
+	public var sprite(default, null):Basic;
 	public var movement(default, null):PhysicsPlatformer;
 	public var velocity_x:Int = 0;
 	public var facing:Int = 0;
@@ -14,7 +14,7 @@ class Actor {
 	var is_jumping:Bool = false;
 	var jump_velocity:Float = -0.85;
 
-	public function new(sprite:Sprite, grid_x:Int, grid_y:Int, tile_size:Int, has_wall_tile_at:(grid_x:Int, grid_y:Int) -> Bool) {
+	public function new(sprite:Basic, grid_x:Int, grid_y:Int, tile_size:Int, has_wall_tile_at:(grid_x:Int, grid_y:Int) -> Bool) {
 		this.sprite = sprite;
 		movement = new PhysicsPlatformer(grid_x, grid_y, tile_size, has_wall_tile_at);
 		movement.velocity.friction_y = 0;

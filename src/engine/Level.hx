@@ -23,7 +23,7 @@ class Level {
 		this.tile_size = tile_size;
 		var tile_count = tile_map.length * tile_map[0].length;
 
-		var buffer = new Buffer<Sprite>(tile_count, true);
+		var buffer = new Buffer<Basic>(tile_count, true);
 		var program = new Program(buffer);
 		display.addProgram(program);
 
@@ -32,11 +32,11 @@ class Level {
 				if (is_wall_tile(row, x)) {
 					var tile_x = x * tile_size;
 					var tile_y = y * tile_size;
-					var sprite = new Sprite(tile_x, tile_y, tile_size);
+					var sprite = new Basic(tile_x, tile_y, tile_size);
 					// x and y are offset to the center of the sprite by default
 					// for level tiles adjust this offset to be top left
-					sprite.px_offset = -(tile_size / 2);
-					sprite.py_offset = -(tile_size / 2);
+					sprite.pivot_x = 0.0;
+					sprite.pivot_y = 0.0;
 					buffer.addElement(sprite);
 				} else {
 					if (is_player_tile(row, x)) {

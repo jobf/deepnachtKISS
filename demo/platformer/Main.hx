@@ -1,6 +1,3 @@
-package;
-
-import lime.ui.Gamepad;
 import engine.Input;
 import haxe.CallStack;
 import lime.app.Application;
@@ -13,34 +10,24 @@ class Main extends Application {
 	var game:Game;
 	var is_ready:Bool;
 
-	override function onPreloadComplete():Void {
-		switch (window.context.type) {
-			case WEBGL, OPENGL, OPENGLES:
-				try
-					startSample(window)
-				catch (_)
-					trace(CallStack.toString(CallStack.exceptionStack()), _);
-			default:
-				throw("Sorry, only works with OpenGL.");
+	override function onWindowCreate() {
+		try {
+			var peoteView = new PeoteView(window);
+			var display = new Display(0, 0, window.width, window.height, Color.GREY1);
+			peoteView.addDisplay(display);
+			var input = new Input(window);
+			game = new Game(display, input, window.width, window.height);
+			is_ready = true;
+		} catch (_) {
+			trace(CallStack.toString(CallStack.exceptionStack()), _);
 		}
-	}
-
-	public function startSample(window:Window) {
-		var peoteView = new PeoteView(window);
-		var display = new Display(0, 0, window.width, window.height, Color.GREY1);
-		peoteView.addDisplay(display);
-		var input = new Input(window);
-		game = new Game(display, input, window.width, window.height);
-		is_ready = true;
 	}
 
 	override function update(deltaTime:Int) {
 		if (is_ready) {
-
 			game.frame(deltaTime);
 		}
 	}
-
 
 	override function onKeyDown(keyCode:lime.ui.KeyCode, modifier:lime.ui.KeyModifier):Void {
 		game.on_key_down(keyCode);

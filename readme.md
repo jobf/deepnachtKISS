@@ -37,5 +37,6 @@ Core movement and collision logic is a lightly extended implementation of "A sim
  - Grid based collisions - for level platforms/walls
  - Radius based collisions - for entity interactions
  - Bresenham line of sight - for casting rays through the level
- - Platformer movement - extension of base movement with extra jump logic
- - No assets, only colored tiles - concentrate on the game
+ - Platformer physics - coyote time, jump buffering, configurable jump height
+ - No assets - only tinted tiles - concentrate on the game
+ - VGA text renderer - because glyphs are friends, too

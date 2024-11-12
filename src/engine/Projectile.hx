@@ -3,7 +3,7 @@ package engine;
 import engine.PhysicsBase;
 
 class Projectile {
-	public var sprite(default, null):Sprite;
+	public var sprite(default, null):Basic;
 	public var movement(default, null):PhysicsSimple;
 
 	var acceleration_x:Float = 0.0;
@@ -14,7 +14,7 @@ class Projectile {
 
 	public var is_expired:Bool = false;
 
-	public function new(sprite:Sprite, movement:PhysicsSimple) {
+	public function new(sprite:Basic, movement:PhysicsSimple) {
 		this.sprite = sprite;
 		this.movement = movement;
 		movement.events.on_collide = on_collide;
@@ -60,7 +60,7 @@ class Projectile {
 	}
 
 	public function on_cache() {
-		sprite.color.a = 0x00;
+		sprite.tint.a = 0x00;
 		sprite.x = -999;
 		sprite.y = -999;
 		acceleration_x = 0;
@@ -112,7 +112,7 @@ class Projectile {
 		movement.position.grid_cell_ratio_y = 0.5;
 		this.acceleration_x = acceleration_x;
 		this.acceleration_y = acceleration_y;
-		sprite.color.a = 0xff;
+		sprite.tint.a = 0xff;
 		movement.update();
 		movement.position.x_previous = movement.position.x;
 		movement.position.y_previous = movement.position.y;

@@ -200,27 +200,27 @@ class Camera {
 }
 
 class CameraDebug {
-	var buffer:Buffer<Sprite>;
+	var buffer:Buffer<Basic>;
 	var program:Program;
-	var zone_sprite:Sprite;
+	var zone_sprite:Basic;
 	var position_x:Float;
 	var position_y:Float;
 	var position_x_previous:Float;
 	var position_y_previous:Float;
 
-	var color_visible:Int = 0x00e5ff20;
-	var color_hidden:Int = 0x00000000;
+	var tint_visible:Int = 0x00e5ff20;
+	var tint_hidden:Int = 0x00000000;
 
 	public function new(display:Display) {
-		buffer = new Buffer<Sprite>(1);
+		buffer = new Buffer<Basic>(1);
 		program = new Program(buffer);
 		program.addToDisplay(display);
 		position_x = -10;
 		position_y = -10;
 		position_x_previous = position_x;
 		position_y_previous = position_y;
-		zone_sprite = new Sprite(position_x, position_y, 1);
-		zone_sprite.color = color_visible;
+		zone_sprite = new Basic(position_x, position_y, 1);
+		zone_sprite.tint = tint_visible;
 		buffer.addElement(zone_sprite);
 	}
 
@@ -245,11 +245,11 @@ class CameraDebug {
 	public var is_visible(get, set):Bool;
 
 	function get_is_visible():Bool {
-		return zone_sprite.color == color_visible;
+		return zone_sprite.tint == tint_visible;
 	}
 
 	function set_is_visible(is_visible:Bool):Bool {
-		zone_sprite.color = is_visible ? color_visible : color_hidden;
+		zone_sprite.tint = is_visible ? tint_visible : tint_hidden;
 		buffer.updateElement(zone_sprite);
 		return is_visible;
 	}

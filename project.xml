@@ -12,8 +12,14 @@
 	
 	<app main="Main" path="bin" file="Main" />
 	<!-- <define name="stats" if="html5" /> -->
-	
+
 	<source path="src" />
+
+	<!-- the main demonstration of the platformer tools here -->
+	<source path="demo/platformer" /> 
+
+	<!-- uncomment below to compile other demos -->
+	<!-- <source path="demo/fontVGA" /> --> 
 	
 	<!-- application layer -->
 	<haxelib name="lime" />	
@@ -33,6 +39,7 @@
 	<haxedef name="peoteview_vertexarrayobjects" />
 
 	<haxedef name="no_deprecation_warnings"/>
+	<haxedef name="keep_inline_positions" if="debug"/>
 
 	<!--<haxedef name="peoteview_debug_macro" />-->
 	<!--<haxedef name="peoteview_debug_buffer" />-->
