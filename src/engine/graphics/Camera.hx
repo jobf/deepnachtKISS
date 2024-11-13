@@ -1,4 +1,4 @@
-package engine;
+package engine.graphics;
 
 import peote.view.Display;
 import peote.view.Program;

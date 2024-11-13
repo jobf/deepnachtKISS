@@ -1,8 +1,8 @@
 import engine.actor.Projectile;
 import engine.actor.Platformer;
 import engine.*;
-import engine.Camera.ScrollConfig;
-import engine.graphics.Basic;
+import engine.graphics.Camera;
+import engine.graphics.elements.Basic;
 import lime.ui.KeyCode;
 import peote.view.*;
 

@@ -1,4 +1,4 @@
-package engine;
+package engine.graphics;
 
 import peote.view.Texture;
 import peote.view.TextureData;
