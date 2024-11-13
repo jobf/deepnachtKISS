@@ -49,7 +49,7 @@ class Game {
 			"#                v           #                     #               #         #",
 			"#               #######  #                                    #    #         #",
 			"#                                                       #          ###       #",
-			"##                        ###  o        v        ###                        ##",
+			"##                        ###  @        v        ###                        ##",
 			"#          ########################################################          #",
 			"#          #                                                      #          #",
 			"##        ##                                                      ##        ##",
@@ -90,34 +90,38 @@ class Game {
 		tile_size = 16;
 		level = new Level(display, tile_map, tile_size);
 
-		var player_count = 1;
 		var projectile_count = 50;
-		var enemy_count = level.enemy_positions.length;
-		var buffer_size = player_count + projectile_count + enemy_count;
+		var buffer_size = level.entity_count + projectile_count;
 		buffer = new Buffer<Basic>(buffer_size);
 		program = new Program(buffer);
 		program.snapToPixel(1);
 		display.addProgram(program);
 
-		enemies = [
-			for (position in level.enemy_positions) {
-				var enemy_grid_x = position[0];
-				var enemy_grid_y = position[1];
-				var enemy = new Platformer(enemy_grid_x, enemy_grid_y, tile_size, level.has_tile_at);
-				enemy.skin.change_tint(0x77ff92FF);
-				// rotate to be more distinctive (don't rely on tint)
-				enemy.skin.rotate(45);
-				enemy.skin.add_to_buffer(buffer);
-				enemy;
-			}
-		];
+		enemies = [];
 
-		hero = new Platformer(level.player_x, level.player_y, tile_size, level.has_tile_at);
-		hero.skin.change_tint(0xff7788FF);
-		hero.skin.add_to_buffer(buffer);
-		hero.physics.velocity.friction_x = 0.25;
-		hero.velocity_y_max = 0.99;
-		hero.velocity_x_max = 0.7;
+		for (key => positions in level.entity_positions.keyValueIterator()) {
+			for (position in positions) {
+				var grid_x = position[0];
+				var grid_y = position[1];
+				var entity = new Platformer(grid_x, grid_y, tile_size, level.has_tile_at);
+				switch key {
+					case "@":
+						entity.skin.change_tint(0xff7788FF);
+						entity.skin.add_to_buffer(buffer);
+						entity.physics.velocity.friction_x = 0.25;
+						entity.velocity_y_max = 0.99;
+						entity.velocity_x_max = 0.7;
+						hero = entity;
+					case "v":
+						entity.skin.change_tint(0x77ff92FF);
+						// rotate to be more distinctive (don't rely on tint)
+						entity.skin.rotate(45);
+						entity.skin.add_to_buffer(buffer);
+						enemies.push(entity);
+					case _: trace('Unknown entity [$key] at $grid_x $grid_y');
+				}
+			}
+		}
 
 		projectile_cache = new ObjectCache(projectile_count, () -> {
 			var projectile = new Projectile(4, tile_size, level.has_tile_at);

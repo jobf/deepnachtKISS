@@ -7,16 +7,15 @@ import peote.view.Buffer;
 class Level {
 	var tile_map:Array<String>;
 
-	public var player_x(default, null):Int;
-	public var player_y(default, null):Int;
 	public var width_tiles(get, never):Int;
 	public var height_tiles(get, never):Int;
 	public var width_pixels(get, never):Int;
 	public var height_pixels(get, never):Int;
+	public var entity_count:Int = 0;
 
 	var tile_size:Int;
 
-	public var enemy_positions(default, null):Array<Array<Int>> = [];
+	public var entity_positions(default, null):Map<String, Array<Array<Int>>> = [];
 
 	public function new(display:Display, tile_map:Array<String>, tile_size:Int) {
 		this.tile_map = tile_map;
@@ -29,24 +28,32 @@ class Level {
 
 		for (y => row in tile_map) {
 			for (x in 0...row.length) {
-				if (is_wall_tile(row, x)) {
-					var tile_x = x * tile_size;
-					var tile_y = y * tile_size;
-					var skin = new Basic(tile_x, tile_y, tile_size);
-					// x and y are offset to the center of the skin by default
-					// for level tiles adjust this offset to be top left
-					skin.pivot_x = 0.0;
-					skin.pivot_y = 0.0;
-					buffer.addElement(skin);
-				} else {
-					if (is_player_tile(row, x)) {
-						player_x = x;
-						player_y = y;
-					}
-					if (is_enemy_tile(row, x)) {
-						enemy_positions.push([x, y]);
-					}
+				var key = row.charAt(x);
+
+				if (key == " ") {
+					// empty space, nothin to do
+					continue;
 				}
+
+				if (key == "#") {
+					// it's a wall, init a graphic
+					var x = x * tile_size;
+					var y = y * tile_size;
+					var graphic = new Basic(x, y, tile_size);
+					// x and y are offset to the center of the graphic by default
+					// for level tiles adjust this offset to be top left
+					graphic.pivot_x = 0.0;
+					graphic.pivot_y = 0.0;
+					buffer.addElement(graphic);
+					continue;
+				}
+
+				// store entity for initialising later
+				if (!entity_positions.exists(key)) {
+					entity_positions[key] = [];
+				}
+				entity_positions[key].push([x, y]);
+				entity_count++;
 			}
 		}
 	}
@@ -63,24 +70,12 @@ class Level {
 		if (grid_y > tile_map.length || grid_y < 0) {
 			return false;
 		}
+
 		if (grid_x > tile_map[0].length || grid_x < 0) {
 			return false;
 		}
 
-		var row = tile_map[grid_y];
-		return is_wall_tile(row, grid_x);
-	}
-
-	inline function is_wall_tile(row:String, x:Int):Bool {
-		return row.charAt(x) == "#";
-	}
-
-	inline function is_player_tile(row:String, x:Int):Bool {
-		return row.charAt(x) == "o";
-	}
-
-	inline function is_enemy_tile(row:String, x:Int):Bool {
-		return row.charAt(x) == "v";
+		return tile_map[grid_y].charAt(grid_x) == "#";
 	}
 
 	function get_width_pixels():Int {
