@@ -1,5 +1,5 @@
 import engine.actor.Projectile;
-import engine.actor.Actor;
+import engine.actor.Platformer;
 import engine.*;
 import engine.Camera.ScrollConfig;
 import engine.graphics.Basic;
@@ -10,8 +10,8 @@ class Game {
 	var tile_size:Int;
 	var level:Level;
 
-	var hero:Actor;
-	var enemies:Array<Actor>;
+	var hero:Platformer;
+	var enemies:Array<Platformer>;
 
 	var projectile_cache:ObjectCache<Projectile>;
 	var projectile_count_down:Int = 0;
@@ -103,7 +103,7 @@ class Game {
 			for (position in level.enemy_positions) {
 				var enemy_grid_x = position[0];
 				var enemy_grid_y = position[1];
-				var enemy = new Actor(enemy_grid_x, enemy_grid_y, tile_size, level.has_tile_at);
+				var enemy = new Platformer(enemy_grid_x, enemy_grid_y, tile_size, level.has_tile_at);
 				enemy.skin.change_tint(0x77ff92FF);
 				// rotate to be more distinctive (don't rely on tint)
 				enemy.skin.rotate(45);
@@ -112,7 +112,7 @@ class Game {
 			}
 		];
 
-		hero = new Actor(level.player_x, level.player_y, tile_size, level.has_tile_at);
+		hero = new Platformer(level.player_x, level.player_y, tile_size, level.has_tile_at);
 		hero.skin.change_tint(0xff7788FF);
 		hero.skin.add_to_buffer(buffer);
 		hero.physics.velocity.friction_x = 0.25;
@@ -167,7 +167,7 @@ class Game {
 		}, fixed_steps_per_second);
 	}
 
-	function collide_with_group(actor:Actor, group:Array<Actor>, is_checking_line_of_sight:Bool = false) {
+	function collide_with_group(actor:Platformer, group:Array<Platformer>, is_checking_line_of_sight:Bool = false) {
 		for (other in enemies) {
 			if (other == actor) {
 				// do not check if comparing against same object
