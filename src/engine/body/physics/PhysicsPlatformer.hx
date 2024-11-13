@@ -1,4 +1,4 @@
-package engine;
+package engine.body.physics;
 
 /**
 	This extension of the base movement adds extra functionality typically found in platformer physics
@@ -11,7 +11,7 @@ package engine;
 	- jump buffer : allows jump button press to to be registered before touching ground
 
  **/
-class PhysicsPlatformer extends engine.PhysicsBase {
+class PhysicsPlatformer extends Physics {
 	public var jump_config(default, null):JumpConfig;
 
 	/** y velocity of jump ascent. measured in tiles per step **/

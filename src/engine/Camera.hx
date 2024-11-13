@@ -68,10 +68,10 @@ class Camera {
 
 	var debug:CameraDebug;
 	var is_debug_visible:Bool = false;
-	var offset_x:Int;
-	var offset_y:Int;
-	var previous_offset_x:Float;
-	var previous_offset_y:Float;
+	var offset_x:Int = 0;
+	var offset_y:Int = 0;
+	var previous_offset_x:Float = 0;
+	var previous_offset_y:Float = 0;
 
 	public function new(display:Display, scrolling:ScrollConfig) {
 		this.display = display;
@@ -133,10 +133,10 @@ class Camera {
 		}
 	}
 
-	public function draw(step_ratio:Float) {
-		debug.draw(step_ratio);
-		display.xOffset = Calculate.lerp(previous_offset_x, offset_x, step_ratio);
-		display.yOffset = Calculate.lerp(previous_offset_y, offset_y, step_ratio);
+	public function draw(frame_ratio:Float) {
+		debug.draw(frame_ratio);
+		display.xOffset = Calculate.lerp(previous_offset_x, offset_x, frame_ratio);
+		display.yOffset = Calculate.lerp(previous_offset_y, offset_y, frame_ratio);
 	}
 
 	/**toggle visibility of dead zone debugger**/
@@ -202,7 +202,7 @@ class Camera {
 class CameraDebug {
 	var buffer:Buffer<Basic>;
 	var program:Program;
-	var zone_sprite:Basic;
+	var debug_element:Basic;
 	var position_x:Float;
 	var position_y:Float;
 	var position_x_previous:Float;
@@ -219,9 +219,9 @@ class CameraDebug {
 		position_y = -10;
 		position_x_previous = position_x;
 		position_y_previous = position_y;
-		zone_sprite = new Basic(position_x, position_y, 1);
-		zone_sprite.tint = tint_visible;
-		buffer.addElement(zone_sprite);
+		debug_element = new Basic(position_x, position_y, 1);
+		debug_element.tint = tint_visible;
+		buffer.addElement(debug_element);
 	}
 
 	inline public function update(scroll:ScrollConfig) {
@@ -230,27 +230,27 @@ class CameraDebug {
 		position_x = scroll.zone_center_x;
 		position_y = scroll.zone_center_y;
 
-		zone_sprite.width = scroll.zone_width;
-		zone_sprite.height = scroll.zone_height;
+		debug_element.width = scroll.zone_width;
+		debug_element.height = scroll.zone_height;
 	}
 
-	public function draw(step_ratio:Float) {
+	public function draw(frame_ratio:Float) {
 		if (is_visible) {
-			zone_sprite.x = Calculate.lerp(position_x_previous, position_x, step_ratio);
-			zone_sprite.y = Calculate.lerp(position_y_previous, position_y, step_ratio);
-			buffer.updateElement(zone_sprite);
+			debug_element.x = Calculate.lerp(position_x_previous, position_x, frame_ratio);
+			debug_element.y = Calculate.lerp(position_y_previous, position_y, frame_ratio);
+			buffer.updateElement(debug_element);
 		}
 	}
 
 	public var is_visible(get, set):Bool;
 
 	function get_is_visible():Bool {
-		return zone_sprite.tint == tint_visible;
+		return debug_element.tint == tint_visible;
 	}
 
 	function set_is_visible(is_visible:Bool):Bool {
-		zone_sprite.tint = is_visible ? tint_visible : tint_hidden;
-		buffer.updateElement(zone_sprite);
+		debug_element.tint = is_visible ? tint_visible : tint_hidden;
+		buffer.updateElement(debug_element);
 		return is_visible;
 	}
 }
