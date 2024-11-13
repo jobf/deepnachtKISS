@@ -1,4 +1,4 @@
-package engine;
+package engine.actor;
 
 import engine.body.physics.PhysicsPlatformer;
 import engine.body.skin.SkinBasic;

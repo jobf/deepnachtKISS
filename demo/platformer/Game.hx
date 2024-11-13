@@ -1,3 +1,5 @@
+import engine.actor.Projectile;
+import engine.actor.Actor;
 import engine.*;
 import engine.Camera.ScrollConfig;
 import engine.graphics.Basic;
