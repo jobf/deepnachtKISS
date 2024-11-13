@@ -1,0 +1,9 @@
+-xml docs/api/doc.xml
+--cwd ../
+--class-path src
+--library lime
+--library peote-view
+--library input2action
+--no-output
+--hl bin/main.hl
+engine
