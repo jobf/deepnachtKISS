@@ -1,4 +1,4 @@
-package engine;
+package engine.body.physics;
 
 /**
 	Based on deepnight blog posts from 2013
@@ -6,7 +6,7 @@ package engine;
 	overlap logic - https://deepnight.net/tutorial/a-simple-platformer-engine-part-2-collisions/
 **/
 
-class PhysicsSimple extends PhysicsBase {
+class PhysicsSimple extends Physics {
 	function update() {
 		// change position within grid cell by velocity
 		update_velocity();
@@ -26,7 +26,7 @@ class PhysicsSimple extends PhysicsBase {
 }
 
 @:publicFields
-abstract class PhysicsBase {
+abstract class Physics {
 	var position(default, null):Position;
 	var velocity(default, null):Velocity;
 	var size(default, null):Size;
@@ -76,7 +76,7 @@ abstract class PhysicsBase {
 		position.grid_cell_ratio_y = 0.5;
 	}
 
-	inline function overlaps(other:PhysicsBase):Bool {
+	inline function overlaps(other:Physics):Bool {
 		var max_distance = size.radius + other.size.radius;
 		var distance_squared = (other.position.x
 			- position.x) * (other.position.x - position.x)
@@ -84,7 +84,7 @@ abstract class PhysicsBase {
 		return distance_squared <= max_distance * max_distance;
 	}
 
-	inline function overlaps_by(other:PhysicsBase):Float {
+	inline function overlaps_by(other:Physics):Float {
 		var max_distance = size.radius + other.size.radius;
 		var distance_squared = (other.position.x
 			- position.x) * (other.position.x - position.x)

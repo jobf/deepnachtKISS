@@ -32,12 +32,12 @@ class Level {
 				if (is_wall_tile(row, x)) {
 					var tile_x = x * tile_size;
 					var tile_y = y * tile_size;
-					var sprite = new Basic(tile_x, tile_y, tile_size);
-					// x and y are offset to the center of the sprite by default
+					var skin = new Basic(tile_x, tile_y, tile_size);
+					// x and y are offset to the center of the skin by default
 					// for level tiles adjust this offset to be top left
-					sprite.pivot_x = 0.0;
-					sprite.pivot_y = 0.0;
-					buffer.addElement(sprite);
+					skin.pivot_x = 0.0;
+					skin.pivot_y = 0.0;
+					buffer.addElement(skin);
 				} else {
 					if (is_player_tile(row, x)) {
 						player_x = x;
