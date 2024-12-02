@@ -1,6 +1,5 @@
 package engine.body.skin;
 
-import peote.view.Buffer;
 import peote.view.Color;
 
 @:publicFields

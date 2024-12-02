@@ -8,9 +8,9 @@ class Main extends Application {
 	override function onWindowCreate() {
 		try {
 
-			var peoteView = new PeoteView(window);
+			var peote_view = new PeoteView(window);
 			var display = new Display(0, 0, window.width, window.height, Color.BLACK);
-			peoteView.addDisplay(display);
+			peote_view.addDisplay(display);
 
 			new Demo(display);
 

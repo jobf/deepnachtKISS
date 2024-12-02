@@ -10,7 +10,7 @@
 	<!-- <window width="800" height="600" fps="61" /> -->
 	<window if="html5" allowHighDPI="false" />
 	
-	<app main="Main" path="bin" file="Main" />
+	<app main="Main" path="dist" file="Main" />
 	<!-- <define name="stats" if="html5" /> -->
 
 	<source path="src" />
@@ -19,7 +19,7 @@
 	<source path="demo/platformer" /> 
 
 	<!-- uncomment below to compile other demos -->
-	<!-- <source path="demo/fontVGA" /> --> 
+	<!-- <source path="demo/fontVGA" />  -->
 	
 	<!-- application layer -->
 	<haxelib name="lime" />	
@@ -55,8 +55,7 @@
 	<!-- <haxedef name="dump=pretty output" /> -->
 	
 	<!-- for html5 and loading inside onPreloadComplete-event the assets need to be embed=true --> 
-	<assets path="assets" exclude="lime.svg" embed="false" />
-	
-	<icon path="assets/lime.svg" />
+	<!-- <assets path="assets" exclude="lime.svg" embed="false" />
+	<icon path="assets/lime.svg" /> -->
 	
 </project>

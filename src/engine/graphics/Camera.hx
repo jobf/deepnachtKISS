@@ -1,4 +1,4 @@
-package engine;
+package engine.graphics;
 
 import peote.view.Display;
 import peote.view.Program;
@@ -135,8 +135,8 @@ class Camera {
 
 	public function draw(frame_ratio:Float) {
 		debug.draw(frame_ratio);
-		display.xOffset = Calculate.lerp(previous_offset_x, offset_x, frame_ratio);
-		display.yOffset = Calculate.lerp(previous_offset_y, offset_y, frame_ratio);
+		display.xOffset = lerp(previous_offset_x, offset_x, frame_ratio);
+		display.yOffset = lerp(previous_offset_y, offset_y, frame_ratio);
 	}
 
 	/**toggle visibility of dead zone debugger**/
@@ -236,8 +236,8 @@ class CameraDebug {
 
 	public function draw(frame_ratio:Float) {
 		if (is_visible) {
-			debug_element.x = Calculate.lerp(position_x_previous, position_x, frame_ratio);
-			debug_element.y = Calculate.lerp(position_y_previous, position_y, frame_ratio);
+			debug_element.x = lerp(position_x_previous, position_x, frame_ratio);
+			debug_element.y = lerp(position_y_previous, position_y, frame_ratio);
 			buffer.updateElement(debug_element);
 		}
 	}

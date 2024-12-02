@@ -1,4 +1,4 @@
-package engine;
+package engine.actor;
 
 import engine.body.Body;
 import engine.body.skin.SkinBasic;

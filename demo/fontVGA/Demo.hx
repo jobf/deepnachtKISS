@@ -1,6 +1,6 @@
 import haxe.Timer;
-import engine.FontVGA;
-import engine.graphics.Tile;
+import engine.graphics.FontVGA;
+import engine.graphics.elements.Tile;
 import peote.view.*;
 
 class Demo {

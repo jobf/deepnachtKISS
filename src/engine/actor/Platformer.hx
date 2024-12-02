@@ -1,10 +1,10 @@
-package engine;
+package engine.actor;
 
 import engine.body.physics.PhysicsPlatformer;
 import engine.body.skin.SkinBasic;
 import engine.body.Body;
 
-class Actor extends Body<SkinBasic, PhysicsPlatformer> {
+class Platformer extends Body<SkinBasic, PhysicsPlatformer> {
 	public var direction_x:Int = 0;
 	public var facing:Int = 0;
 

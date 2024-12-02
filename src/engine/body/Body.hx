@@ -21,8 +21,8 @@ abstract class Body<TSkin:Skin, TPhysics:Physics> {
     }
 
     function draw(frame_ratio:Float) {
-        var x = Calculate.lerp(physics.position.x_previous, physics.position.x, frame_ratio);
-        var y = Calculate.lerp(physics.position.y_previous, physics.position.y, frame_ratio);
+        var x = lerp(physics.position.x_previous, physics.position.x, frame_ratio);
+        var y = lerp(physics.position.y_previous, physics.position.y, frame_ratio);
         skin.move(x, y);
     }
 }
