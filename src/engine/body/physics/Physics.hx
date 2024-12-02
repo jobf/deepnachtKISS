@@ -25,16 +25,34 @@ class PhysicsSimple extends Physics {
 	}
 }
 
+/**
+	This is the base class for Physics contains logic for moving through a tile map
+**/
 @:publicFields
 abstract class Physics {
+	/** position within the grid **/
 	var position(default, null):Position;
+
+	/** dimensions for interacting with the grid **/
+	var size(default, null):Dimensions;
+
+	/** speed of movement through the grid **/
 	var velocity(default, null):Velocity;
-	var size(default, null):Size;
+	
+	/** the neighbouring tiles in the grid **/
+	var neighbours(default, null):Neighbours;
+
+	/** callbacks for significant events **/
 	var events(default, null):Events;
+	
+	private var has_wall_tile_at:(grid_x:Int, grid_y:Int) -> Bool;
 
-	var has_wall_tile_at:(grid_x:Int, grid_y:Int) -> Bool;
-	var neighbours:Neighbours;
-
+	/**
+		@param grid_x the starting x co-ordinate in the grid
+		@param grid_y the starting y co-ordinate in the grid
+		@param tile_size the size of each grid cell (squared)
+		@param has_wall_tile_at a callback which is used to determine whether a co-ordinate has a solid tile
+	**/
 	function new(grid_x:Int, grid_y:Int, tile_size:Int, has_wall_tile_at:(grid_x:Int, grid_y:Int) -> Bool) {
 		var grid_cell_ratio_x = 0.5;
 		var grid_cell_ratio_y = 0.5;
@@ -67,15 +85,25 @@ abstract class Physics {
 		this.has_wall_tile_at = has_wall_tile_at;
 	}
 
+	/** 
+		Relocate to a position in the world instantly. Does not traverse the grid but grid positions will be updated accordingly.
+		@param x The pixel position of x to move to, in world co-ordinates
+		@param y The pixel position of y to move to, in world co-ordinates
+	**/
 	inline function teleport_to(x:Float, y:Float) {
 		position.x = x;
 		position.y = y;
+
+		// calculate grid co-ordinates by using the tile size
 		position.grid_x = Std.int(x / size.tile_size);
 		position.grid_y = Std.int(y / size.tile_size);
+
+		// center to the grid cell
 		position.grid_cell_ratio_x = 0.5;
 		position.grid_cell_ratio_y = 0.5;
 	}
 
+	/** Check if the other Physics overlaps this **/
 	inline function overlaps(other:Physics):Bool {
 		var max_distance = size.radius + other.size.radius;
 		var distance_squared = (other.position.x
@@ -84,6 +112,7 @@ abstract class Physics {
 		return distance_squared <= max_distance * max_distance;
 	}
 
+	/** Check if the other Physics overlaps this and return the size of the overlap in pixels **/
 	inline function overlaps_by(other:Physics):Float {
 		var max_distance = size.radius + other.size.radius;
 		var distance_squared = (other.position.x
@@ -92,8 +121,13 @@ abstract class Physics {
 		return (max_distance * max_distance) - distance_squared;
 	}
 
+	/** 
+		This function is called once per step of the physics simulation.
+		It does not have a predefined implementation, instead allowing for custom logic to be formed using the provided functions in this class or completely custom implementations.
+	**/
 	abstract function update():Void;
 
+	/** Applies **/
 	inline function update_velocity() {
 		position.grid_cell_ratio_x += velocity.delta_x;
 		velocity.delta_x *= (1.0 - velocity.friction_x);
@@ -212,7 +246,7 @@ class Velocity {
 
 @:structInit
 @:publicFields
-class Size {
+class Dimensions {
 	var edge_left:Float = 0.3;
 	var edge_right:Float = 0.7;
 	var edge_top:Float = 0.2;

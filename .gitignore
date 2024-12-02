@@ -3,3 +3,5 @@ dist/
 scratch/
 deploy/
 secrets/
+docs/api/
+docs/html/
