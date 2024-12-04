@@ -19,7 +19,8 @@
 	<source path="demo/platformer" /> 
 
 	<!-- uncomment below to compile other demos -->
-	<!-- <source path="demo/fontVGA" />  -->
+	<source path="demo/fontVGA" /> 
+	<source path="demo/not-galaga" /> 
 	
 	<!-- application layer -->
 	<haxelib name="lime" />	
