@@ -122,4 +122,6 @@ class Projectile extends Body<SkinBasic, PhysicsSimple> {
 		physics.position.x_previous = physics.position.x;
 		physics.position.y_previous = physics.position.y;
 	}
+
 }
+

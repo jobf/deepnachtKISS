@@ -1,3 +1,5 @@
+import engine.actor.Projectile;
+import engine.ObjectCache;
 import engine.Loop;
 import engine.Input;
 import peote.view.text.TextOptions;
@@ -15,6 +17,7 @@ class Game {
 	var targets:Array<SpaceCraft>;
 	var sprites:Buffer<Basic>;
 	var is_ready:Bool;
+	var projectiles:ObjectCache<Projectile>;
 
 	public function new(display:Display, input:Input) {
 		var formation = ["   oooo   ", " oooooooo ", " oooooooo ", "oooooooooo", "oooooooooo",];
@@ -33,13 +36,23 @@ class Game {
 		var y_ctr = y_display - (line_width * 0.5) + ctr + edge;
 
 		sprites = SpaceCraft.init(display);
+
+		var projectile_count = 50;
+		var projectile_size = 8;
+		projectiles = new ObjectCache(projectile_count, () -> {
+			var projectile = new Projectile(4, projectile_size, (grid_x, grid_y) -> false);
+			projectile.skin.change_tint(0xffd677F0);
+			projectile.skin.add_to_buffer(sprites);
+			projectile;
+		}, projectile -> projectile.on_cache());
+
 		targets = [];
 		for (row => line in formation) {
 			for (col in 0...line.length) {
 				if (line.charAt(col) != ' ') {
 					var x = (col * space) + x_ctr;
 					var y = (row * space) + y_ctr;
-					targets.push(new SpaceCraft(x, y, size, sprites));
+					targets.push(new SpaceCraft(x, y, size, sprites, projectiles));
 				}
 			}
 		}
@@ -47,7 +60,7 @@ class Game {
 		var x = x_display;
 		var y = display.height - edge;
 
-		hero = new SpaceCraft(x, y, size, sprites);
+		hero = new SpaceCraft(x, y, size, sprites, projectiles);
 
 		var hud = new Hud(display, 32);
 		input.registerController({
@@ -86,6 +99,11 @@ class Game {
 		for (ship in targets) {
 			ship.update();
 		}
+
+		projectiles.iterate_active(projectile -> {
+			projectile.update();
+			return projectile.physics.position.y < 64;
+		});
 	}
 
 	function draw(frame_ratio:Float) {
@@ -94,6 +112,8 @@ class Game {
 		for (ship in targets) {
 			ship.draw(frame_ratio);
 		}
+
+		projectiles.iterate_all(projectile -> projectile.draw(frame_ratio));
 
 		sprites.update();
 	}
@@ -115,14 +135,17 @@ class PhysicsGalaga extends Physics {
 class SpaceCraft extends Body<SkinBasic, PhysicsGalaga> {
 	function on_collide(side_x:Int, side_y:Int) {}
 
+	var projectiles:ObjectCache<Projectile>;
+
 	static function init(display:Display) {
-		var buffer = new Buffer<Basic>(64);
+		var buffer = new Buffer<Basic>(256);
 		var program = new Program(buffer);
 		program.addToDisplay(display);
 		return buffer;
 	}
 
-	public function new(x:Float, y:Float, size:Int, buffer:Buffer<Basic>) {
+	public function new(x:Float, y:Float, size:Int, buffer:Buffer<Basic>, projectiles:ObjectCache<Projectile>) {
+		this.projectiles = projectiles;
 		var skin = new SkinBasic(x, y, size);
 		skin.add_to_buffer(buffer);
 		super(skin, new PhysicsGalaga(x, y, size));
@@ -138,7 +161,13 @@ class SpaceCraft extends Body<SkinBasic, PhysicsGalaga> {
 	}
 
 	public function fire() {
-		trace("pew");
+		var missile = projectiles.get_item();
+		if (missile != null) {
+			missile.revive();
+			missile.physics.teleport_to(physics.position.x, physics.position.y);
+			missile.acceleration_y = -100.8;
+			missile.skin.change_alpha(1.0);
+		}
 	}
 }
 
