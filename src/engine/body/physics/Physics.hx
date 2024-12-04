@@ -94,6 +94,8 @@ abstract class Physics {
 		position.x = x;
 		position.y = y;
 
+		position.x_previous = x;
+		position.y_previous = y;
 		// calculate grid co-ordinates by using the tile size
 		position.grid_x = Std.int(x / size.tile_size);
 		position.grid_y = Std.int(y / size.tile_size);
